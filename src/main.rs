@@ -33,7 +33,7 @@ fn main() -> Result<(), std::io::Error> {
                                                     if let Some(&string_last_part) = tokens.last() {
                                                         if string_first_part.starts_with("'") && string_last_part.ends_with("'") {
                                                             let value: String = tokens[5..].join(" ");
-                                                            let metadata: String = format!("{}, {}, {}", var_name, var_type, value);
+                                                            let metadata: String = format!("{} {} {}", var_name, var_type, value);
                                                             stack.push(metadata);
                                                         } else {
                                                             println!("Usage: let str :: String = 'Hello world'");
@@ -45,7 +45,7 @@ fn main() -> Result<(), std::io::Error> {
                                             "Int" => {
                                                 if let Some(&value) = tokens.get(5) {
                                                     if let Ok(_number) = value.parse::<i32>() {
-                                                        let metadata: String = format!("{}, {}, {}", var_name, var_type, value);
+                                                        let metadata: String = format!("{} {} {}", var_name, var_type, value);
                                                         stack.push(metadata);
                                                     } else {
                                                         println!("{} {}", "Not a piece of valid integer: ".red(), value);
@@ -56,7 +56,7 @@ fn main() -> Result<(), std::io::Error> {
                                             "Float" => {
                                                 if let Some(&value) = tokens.get(5) {
                                                     if let Ok(_number) = value.parse::<f64>() {
-                                                        let metadata: String = format!("{}, {}, {}", var_name, var_type, value);
+                                                        let metadata: String = format!("{} {} {}", var_name, var_type, value);
                                                         stack.push(metadata);
                                                     } else {
                                                         println!("{} {}", "Not a piece of float: ".red(), value);
@@ -67,7 +67,7 @@ fn main() -> Result<(), std::io::Error> {
                                             "Char" => {
                                                 if let Some(&value) = tokens.get(5) {
                                                     if value.len() == 1 {
-                                                        let metadata: String = format!("{}, {}, {}", var_name, var_type, value);
+                                                        let metadata: String = format!("{} {} {}", var_name, var_type, value);
                                                         stack.push(metadata);
                                                     } else {
                                                         println!("{}: {}", "Not a valid piece of char due to length".red(), value);
