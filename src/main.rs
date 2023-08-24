@@ -47,7 +47,6 @@ fn main() -> Result<(), std::io::Error> {
                                                     if let Ok(_number) = value.parse::<i32>() {
                                                         let metadata: String = format!("{}, {}, {}", var_name, var_type, value);
                                                         stack.push(metadata);
-                                                        println!("{:?}", stack);
                                                     } else {
                                                         println!("{} {}", "Not a piece of valid integer: ".red(), value);
                                                     }
@@ -59,7 +58,6 @@ fn main() -> Result<(), std::io::Error> {
                                                     if let Ok(_number) = value.parse::<f64>() {
                                                         let metadata: String = format!("{}, {}, {}", var_name, var_type, value);
                                                         stack.push(metadata);
-                                                        println!("{:?}", stack)
                                                     } else {
                                                         println!("{} {}", "Not a piece of float: ".red(), value);
                                                     }
