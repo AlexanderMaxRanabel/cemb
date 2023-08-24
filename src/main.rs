@@ -38,9 +38,13 @@ fn main() -> Result<(), std::io::Error> {
                                             },
 
                                             "Float" => {
-                                                type_system::float_type(tokens, stack.clone() , var_name, var_type)
+                                                type_system::float_type(tokens, stack.clone() , var_name, var_type);
                                             },
-                                            _ => {
+
+                                            "Char" => {
+                                                type_system::char_type(tokens, stack.clone(), var_name, var_type);
+                                            },
+                                             _ => {
                                                 println!("{} {}", "Error: Unknown Type: ".red(), var_type);
                                                 std::process::exit(0)
                                             }
