@@ -142,12 +142,41 @@ fn main() -> Result<(), std::io::Error> {
                                                                 }
                                                             }
                                                         }
-                                                   } else if let Ok(any) = (tokens.get(3).expect("Failed to receive or parse")).parse::<f64>() {
-                                                       println!("{}: {}", "Not a valid piece of float ".red(), (tokens.get(3).expect("Failed to receive it")));
-                                                       std::process::exit(1)
+                                                   } else {
+                                                       println!("{} {}", "Not an integer:".red(), tokens.get(1).expect("Failed to receive it"));
                                                    }
                                                } else if let Ok(number_float_1) = (tokens.get(1).expect("Failed to receive or parse")).parse::<f64>() {
+                                                    if let Ok(number_float_2) = (tokens.get(3).expect("Failed to receive or parse")).parse::<f64>() {
+                                                        if let Some(&operator) = tokens.get(2) {
+                                                            match operator {
+                                                                "+" => {
+                                                                    let result = number_float_1 + number_float_2;
+                                                                    println!("{}", result);
+                                                                },
 
+                                                                "-" => {
+                                                                    let result = number_float_1 - number_float_2;
+                                                                    println!("{}", result);
+                                                                },
+
+                                                                "*" => {
+                                                                    let result = number_float_1 * number_float_2;
+                                                                    println!("{}", result);
+                                                                },
+
+                                                                "/" => {
+                                                                    let result = number_float_1 / number_float_2;
+                                                                    println!("{}", result);
+                                                                },
+
+                                                                _ => {
+                                                                    println!("{}: {}", "Error: Not a valid operator ".red(), operator);
+                                                                }
+                                                            }
+                                                        }
+                                                    } else {
+                                                        println!("{} {}", "Not an float:".red(), tokens.get(1).expect("Failed to receive it"));
+                                                    }
                                                } else {
                                                    println!("{}: {}", "Error: Not a valid piece of integer nor float ".red(), (tokens.get(1).expect("Failed to receive it")));
                                                    std::process::exit(1)
