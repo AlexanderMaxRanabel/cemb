@@ -111,30 +111,47 @@ fn main() -> Result<(), std::io::Error> {
                                             let combined_str: String = tokens[1..].join(" ");
                                             println!("{}", combined_str);
                                         } else {
-                                           //printline hello + x
-                                           if tokens.len() == 4 {
-                                                if let Some(&operator) = tokens.get(2) {
-                                                    match operator {
-                                                        "+" => {
-                                                            if let Some(&fourth_token) = tokens.get(3) {
-                                                               for element in &stack {
-                                                                    let metadata_array: Vec<String> = element.split_whitespace().map(|s| s.to_string()).collect();
-                                                                    let variable_name = metadata_array[0].clone();
-                                                                    if second_token == variable_name {
-                                                                        if let Some(&ref first_value) = metadata_array.get(2) {
-                                                                            if fourth_token == variable_name {
-                                                                                if let Some(&ref second_value) = metadata_array.get(2) {
+                                           //printline 2 + 1
+                                           if tokens.len() > 3 {
+                                               if let Ok(number_integer_1) = (tokens.get(1).expect("Failed to receive or parse")).parse::<i64>() {
+                                                   if let Ok(number_integer_2) = (tokens.get(3).expect("Failed to receive or parse")).parse::<i64>() {
+                                                        if let Some(&operator) = tokens.get(2) {
+                                                            match operator {
+                                                                "+" => {
+                                                                    let result = number_integer_1 + number_integer_2;
+                                                                    println!("{}", result);
+                                                                },
 
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                               }
+                                                                "-" => {
+                                                                    let result = number_integer_1 - number_integer_2;
+                                                                    println!("{}", result);
+                                                                },
+
+                                                                "*" => {
+                                                                    let result = number_integer_1 * number_integer_2;
+                                                                    println!("{}", result);
+                                                                },
+
+                                                                "/" => {
+                                                                    let result = number_integer_1 / number_integer_2;
+                                                                    println!("{}", result);
+                                                                },
+
+                                                                _ => {
+                                                                    println!("{}: {}", "Error: Not a valid operator ".red(), operator);
+                                                                }
                                                             }
-                                                        },
-                                                        _ => println!("{}: {}", "Not a valid operator".red(), operator)
-                                                    }
-                                                }
+                                                        }
+                                                   } else if let Ok(any) = (tokens.get(3).expect("Failed to receive or parse")).parse::<f64>() {
+                                                       println!("{}: {}", "Not a valid piece of float ".red(), (tokens.get(3).expect("Failed to receive it")));
+                                                       std::process::exit(1)
+                                                   }
+                                               } else if let Ok(number_float_1) = (tokens.get(1).expect("Failed to receive or parse")).parse::<f64>() {
+
+                                               } else {
+                                                   println!("{}: {}", "Error: Not a valid piece of integer nor float ".red(), (tokens.get(1).expect("Failed to receive it")));
+                                                   std::process::exit(1)
+                                               }
                                            } else {
                                                 for element in &stack {
                                                     let metadata_array: Vec<String> = element.split_whitespace().map(|s| s.to_string()).collect();
@@ -157,11 +174,7 @@ fn main() -> Result<(), std::io::Error> {
                         if let Some(&referant) = tokens.get(1) {
                             if let Some(&operator) = tokens.get(2) {
                                 match operator {
-                                    "==" => {
-                                        if let Some(&second_referant) = tokens.get(3) {
-
-                                        }
-                                    },
+                                    "==" => {},
                                     "!=" => {},
                                     ">" => {},
                                     "<" => {},
