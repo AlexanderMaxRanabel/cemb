@@ -1,6 +1,6 @@
 use std::env;
 
-use std::fs::File;
+use std::fs::{File};
 use std::io::{BufReader, BufRead};
 use colored::*;
 
@@ -200,16 +200,50 @@ fn main() -> Result<(), std::io::Error> {
                     },
 
                     "if" => {
-                        if let Some(&referant) = tokens.get(1) {
+                        if let Some(&comparable) = tokens.get(1) {
                             if let Some(&operator) = tokens.get(2) {
-                                match operator {
-                                    "==" => {},
-                                    "!=" => {},
-                                    ">" => {},
-                                    "<" => {},
-                                    _ => {
-                                        println!("Usage: if x <operator> y do <code> else <code>");
-                                    },
+                                if let Some(&second_comparable) = tokens.get(3) {
+                                    for element in &stack {
+                                        let metadata_array: Vec<String> = element.split_whitespace().map(|s| s.to_string()).collect();
+                                        let comparable_name = metadata_array[0].clone();
+                                        if comparable == comparable_name {
+                                            let first_comparable_value = &metadata_array[2];
+                                            let first_comparable_type = &metadata_array[1];
+
+                                            if second_comparable == comparable_name {
+                                                let second_comparable_value = &metadata_array[2];
+                                                let second_comparable_type = &metadata_array[1];
+
+                                                if first_comparable_type == second_comparable_type {
+                                                    match operator {
+                                                        //if x <operator> y <code>
+                                                        "==" => {
+                                                            if first_comparable_value == second_comparable_value {
+                                                                if let Some(&code_executable) = tokens.get(5) {
+
+                                                                }
+                                                            }
+                                                        },
+                                                        "!=" => {},
+                                                        "<" =>  {},
+                                                        ">" => {},
+                                                        _ => {
+                                                            println!("{} Not a valid operator: {}", "Error:".red(), operator);
+                                                            std::process::exit(1);
+                                                        }
+                                                    }
+                                                } else {
+                                                    println!("{}: Types Does not match {} {}", "Error".red(), first_comparable_type, second_comparable_type);
+                                                    std::process::exit(1)
+                                                }
+
+                                            } else {
+                                                continue;
+                                            }
+                                        } else {
+                                            continue;
+                                        }
+                                    }
                                 }
                             }
                         }
