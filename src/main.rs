@@ -215,21 +215,9 @@ fn main() -> Result<(), std::io::Error> {
                                                 let second_comparable_type = &metadata_array[1];
 
                                                 if first_comparable_type == second_comparable_type {
-                                                    match operator {
-                                                        //if x <operator> y <code>
-                                                        "==" => {
-                                                            if first_comparable_value == second_comparable_value {
-                                                                if let Some(&code_executable) = tokens.get(5) {
+                                                    if first_comparable_value == second_comparable_value {
+                                                        if let Some(&code_executable) = tokens.get(5) {
 
-                                                                }
-                                                            }
-                                                        },
-                                                        "!=" => {},
-                                                        "<" =>  {},
-                                                        ">" => {},
-                                                        _ => {
-                                                            println!("{} Not a valid operator: {}", "Error:".red(), operator);
-                                                            std::process::exit(1);
                                                         }
                                                     }
                                                 } else {
