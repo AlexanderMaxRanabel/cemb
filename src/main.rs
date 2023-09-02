@@ -1,3 +1,5 @@
+mod printline;
+
 use std::env;
 
 use std::fs::{File};
@@ -87,165 +89,27 @@ fn main() -> Result<(), std::io::Error> {
                         }
                     },
                     "printline" => {
-                        if let Some(&second_token) = tokens.get(1) {
-                            match second_token {
-                                "cemb.stack" => {
-                                    if stack.len() > 0 {
-                                        println!("{:?}", stack);
-                                    } else {
-                                        println!("[]")
-                                    }
-                                },
-
-                                "cemb.fromstack" => {
-                                    if let Some(&stack_element) = tokens.get(2) {
-                                        let stack_element: usize = stack_element.parse().expect("Failed to convert to Usize");
-                                        let certain_element = stack[stack_element].clone();
-                                        println!("{}", certain_element);
-                                    }
-                                },
-
-                                _ => {
-                                    if let Some(&last_element) = tokens.last() {
-                                        if second_token.starts_with("'") && last_element.ends_with("'") {
-                                            let combined_str: String = tokens[1..].join(" ");
-                                            println!("{}", combined_str);
-                                        } else {
-                                           //printline 2 + 1
-                                           if tokens.len() > 3 {
-                                               if let Ok(number_integer_1) = (tokens.get(1).expect("Failed to receive or parse")).parse::<i64>() {
-                                                   if let Ok(number_integer_2) = (tokens.get(3).expect("Failed to receive or parse")).parse::<i64>() {
-                                                        if let Some(&operator) = tokens.get(2) {
-                                                            match operator {
-                                                                "+" => {
-                                                                    let result = number_integer_1 + number_integer_2;
-                                                                    println!("{}", result);
-                                                                },
-
-                                                                "-" => {
-                                                                    let result = number_integer_1 - number_integer_2;
-                                                                    println!("{}", result);
-                                                                },
-
-                                                                "*" => {
-                                                                    let result = number_integer_1 * number_integer_2;
-                                                                    println!("{}", result);
-                                                                },
-
-                                                                "/" => {
-                                                                    let result = number_integer_1 / number_integer_2;
-                                                                    println!("{}", result);
-                                                                },
-
-                                                                _ => {
-                                                                    println!("{}: {}", "Error: Not a valid operator ".red(), operator);
-                                                                }
-                                                            }
-                                                        }
-                                                   } else {
-                                                       println!("{} {}", "Not an integer:".red(), tokens.get(1).expect("Failed to receive it"));
-                                                   }
-                                               } else if let Ok(number_float_1) = (tokens.get(1).expect("Failed to receive or parse")).parse::<f64>() {
-                                                    if let Ok(number_float_2) = (tokens.get(3).expect("Failed to receive or parse")).parse::<f64>() {
-                                                        if let Some(&operator) = tokens.get(2) {
-                                                            match operator {
-                                                                "+" => {
-                                                                    let result = number_float_1 + number_float_2;
-                                                                    println!("{}", result);
-                                                                },
-
-                                                                "-" => {
-                                                                    let result = number_float_1 - number_float_2;
-                                                                    println!("{}", result);
-                                                                },
-
-                                                                "*" => {
-                                                                    let result = number_float_1 * number_float_2;
-                                                                    println!("{}", result);
-                                                                },
-
-                                                                "/" => {
-                                                                    let result = number_float_1 / number_float_2;
-                                                                    println!("{}", result);
-                                                                },
-
-                                                                _ => {
-                                                                    println!("{}: {}", "Error: Not a valid operator ".red(), operator);
-                                                                }
-                                                            }
-                                                        }
-                                                    } else {
-                                                        println!("{} {}", "Not an float:".red(), tokens.get(1).expect("Failed to receive it"));
-                                                    }
-                                               } else {
-                                                   println!("{}: {}", "Error: Not a valid piece of integer nor float ".red(), (tokens.get(1).expect("Failed to receive it")));
-                                                   std::process::exit(1)
-                                               }
-                                           } else {
-                                                for element in &stack {
-                                                    let metadata_array: Vec<String> = element.split_whitespace().map(|s| s.to_string()).collect();
-                                                    let variable_name = metadata_array[0].clone();
-                                                    if second_token == variable_name {
-                                                        if let Some(&ref value) = metadata_array.get(2) {
-                                                            println!("{}", value);
-                                                        }    
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                            }
-                        }
+                        printline::printline(tokens, stack.clone());
                     },
 
                     "if" => {
                         if let Some(&comparable) = tokens.get(1) {
-                            if let Some(&operator) = tokens.get(2) {
-                                if let Some(&second_comparable) = tokens.get(3) {
+                            if let Some(&second_comparable) = tokens.get(3) {
+                                if let Some(&operator) = tokens.get(2) {
                                     for element in &stack {
                                         let metadata_array: Vec<String> = element.split_whitespace().map(|s| s.to_string()).collect();
-                                        let comparable_name = metadata_array[0].clone();
-                                        if comparable == comparable_name {
-                                            let first_comparable_value = &metadata_array[2];
-                                            let first_comparable_type = &metadata_array[1];
+                                        if metadata_array[0] == comparable {
+                                            if metadata_array[0] == second_comparable {
 
-                                            if second_comparable == comparable_name {
-                                                let second_comparable_value = &metadata_array[2];
-                                                let second_comparable_type = &metadata_array[1];
-
-                                                if first_comparable_type == second_comparable_type {
-                                                    match operator {
-                                                        //if x <operator> y <code>
-                                                        "==" => {
-                                                            if first_comparable_value == second_comparable_value {
-
-                                                            }
-                                                        },
-                                                        "!=" => {},
-                                                        "<" =>  {},
-                                                        ">" => {},
-                                                        _ => {
-                                                            println!("{} Not a valid operator: {}", "Error:".red(), operator);
-                                                            std::process::exit(1);
-                                                        }
-                                                    }
-                                                } else {
-                                                    println!("{}: Types Does not match {} {}", "Error".red(), first_comparable_type, second_comparable_type);
-                                                    std::process::exit(1)
-                                                }
-
-                                            } else {
-                                                continue;
                                             }
                                         } else {
-                                            continue;
+                                            continue
                                         }
                                     }
                                 }
                             }
                         }
-                    },
+                    }
 
                     "dealloc_full_stack" => {
                         stack.clear();
