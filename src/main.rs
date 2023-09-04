@@ -93,6 +93,7 @@ fn main() -> Result<(), std::io::Error> {
                     },
 
                     "if" => {
+                        let mut comparable_values_vector: Vec<&str> = Vec::new();
                         if let Some(&comparable) = tokens.get(1) {
                             if let Some(&second_comparable) = tokens.get(3) {
                                 if let Some(&operator) = tokens.get(2) {
@@ -100,7 +101,7 @@ fn main() -> Result<(), std::io::Error> {
                                         let metadata_array: Vec<String> = element.split_whitespace().map(|s| s.to_string()).collect();
                                         if metadata_array[0] == comparable {
                                             if metadata_array[0] == second_comparable {
-
+                                                comparable_values_vector.push(metadata_array[2].as_str());
                                             }
                                         } else {
                                             continue
