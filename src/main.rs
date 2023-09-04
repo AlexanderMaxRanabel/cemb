@@ -93,20 +93,70 @@ fn main() -> Result<(), std::io::Error> {
                     },
 
                     "if" => {
-                        let mut comparable_values_vector: Vec<&str> = Vec::new();
-                        if let Some(&comparable) = tokens.get(1) {
-                            if let Some(&second_comparable) = tokens.get(3) {
-                                if let Some(&operator) = tokens.get(2) {
-                                    for element in &stack {
-                                        let metadata_array: Vec<String> = element.split_whitespace().map(|s| s.to_string()).collect();
-                                        if metadata_array[0] == comparable {
-                                            if metadata_array[0] == second_comparable {
-                                                comparable_values_vector.push(metadata_array[2].as_str());
+                        if let Some(&comparable_one) = tokens.get(1) {
+                            if let Some(&comparable_two) = tokens.get(3) {
+                                let comparable_one_address: usize = comparable_one.parse().expect("Failed to convert to usize");
+                                let comparable_two_address: usize = comparable_two.parse().expect("Failed to convert to usize");
+
+                                let comparable_one_metadata: Vec<String> = (stack[comparable_one_address].clone()).split_whitespace().map(|s: &str| s.to_string()).collect();
+                                let comparable_two_metadata: Vec<String> = (stack[comparable_two_address].clone()).split_whitespace().map(|s: &str| s.to_string()).collect();
+
+                                let comparable_one_type: String = comparable_one_metadata[1].clone();
+                                let comparable_two_type: String = comparable_two_metadata[1].clone();
+
+                                if comparable_one_type == comparable_two_type {
+                                    /*
+                                    if[0] 0[1] ==[2] 1[3] printline cemb.stack
+                                    */
+                                    if let Some(&operator) = tokens.get(2) {
+                                        let comparable_one_value: String = comparable_one_metadata[2].clone();
+                                        let comparable_two_value: String = comparable_one_metadata[2].clone();
+                                        match operator {
+                                            "==" => {
+                                                if comparable_one_value == comparable_two_value {
+                                                    let confirmed_executable_code_vector: Vec<&str> = tokens[3..].to_vec();
+                                                    let confirmed_executable_code_rest: Vec<&str> = tokens[0..].to_vec();
+                                                    match confirmed_executable_code_vector[0] {
+                                                        "printline" => {
+                                                            printline::printline(confirmed_executable_code_rest, stack.clone());
+                                                        }
+                                                        _ => {
+                                                            println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
+                                                            std::process::exit(1);
+                                                        }
+                                                    }
+                                                } else {
+
+                                                }
                                             }
-                                        } else {
-                                            continue
+                                            "!=" => {
+
+                                            }
+                                            "<" => {
+                                                if comparable_one_type == "String" || comparable_two_type == "String" {
+                                                    println!("{}: Strings cannot be compared: {} {}", "Error".red(), comparable_one_type.magenta(), comparable_two_type.magenta());
+                                                    std::process::exit(1);
+                                                } else {
+
+                                                }
+                                            }
+                                            ">" => {
+                                                if comparable_one_type == "String" || comparable_two_type == "String" {
+                                                    println!("{}: Strings cannot be compared: {} {}", "Error".red(), comparable_one_type.magenta(), comparable_two_type.magenta());
+                                                    std::process::exit(1);
+                                                } else {
+
+                                                }
+                                            }
+                                            &_ => {
+                                                println!("{}: Unknown Operator:  {}", "Error".red(), operator.magenta());
+                                                std::process::exit(1);
+                                            }
                                         }
                                     }
+                                } else {
+                                    println!("{}: Type Mismatch: {} {}", "Error".red(), comparable_one_type.magenta(), comparable_two_type.magenta());
+                                    break
                                 }
                             }
                         }
