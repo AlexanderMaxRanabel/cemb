@@ -46,7 +46,7 @@ fn main() -> Result<(), std::io::Error> {
                                             },
                                             "Int" => {
                                                 if let Some(&value) = tokens.get(5) {
-                                                    if let Ok(_number) = value.parse::<i32>() {
+                                                    if let Ok(_number) = value.parse::<i64>() {
                                                         let metadata: String = format!("{} {} {}", var_name, var_type, value);
                                                         stack.push(metadata);
                                                     } else {
@@ -114,11 +114,65 @@ fn main() -> Result<(), std::io::Error> {
                                         match operator {
                                             "==" => {
                                                 if comparable_one_value == comparable_two_value {
-                                                    let confirmed_executable_code_vector: Vec<&str> = tokens[3..].to_vec();
-                                                    let confirmed_executable_code_rest: Vec<&str> = tokens[0..].to_vec();
+                                                    let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
+                                                    let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
+                                                    println!("{:?}", confirmed_executable_code_vector);
+                                                    println!("{:?}", confirmed_executable_code_rest);
                                                     match confirmed_executable_code_vector[0] {
                                                         "printline" => {
                                                             printline::printline(confirmed_executable_code_rest, stack.clone());
+                                                        }
+
+                                                        "dealloc_full_stack" => {
+                                                            stack.clear();
+                                                            stack.shrink_to_fit();
+                                                        }
+
+                                                        "dealloc_certain_element" => {
+                                                            if let Some(&element_to_remove) = confirmed_executable_code_rest.get(1) {
+                                                                let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                                if (element_to_remove) < stack.len() {
+                                                                    stack.remove(element_to_remove);
+                                                                } else {
+                                                                    println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                    std::process::exit(0);
+                                                                }
+                                                            }
+                                                        }
+
+                                                        _ => {
+                                                            println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
+                                                            std::process::exit(1);
+                                                        }
+                                                    }
+                                                } else {
+                                                    continue
+                                                }
+                                            }
+                                            "!=" => {
+                                                if comparable_one_value != comparable_two_value {
+                                                    let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
+                                                    let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
+                                                    match confirmed_executable_code_vector[0] {
+                                                        "printline" => {
+                                                            printline::printline(confirmed_executable_code_rest, stack.clone());
+                                                        }
+
+                                                        "dealloc_full_stack" => {
+                                                            stack.clear();
+                                                            stack.shrink_to_fit();
+                                                        }
+
+                                                        "dealloc_certain_element" => {
+                                                            if let Some(&element_to_remove) = tokens.get(1) {
+                                                                let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                                if (element_to_remove) < stack.len() {
+                                                                    stack.remove(element_to_remove);
+                                                                } else {
+                                                                    println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                    std::process::exit(0);
+                                                                }
+                                                            }
                                                         }
                                                         _ => {
                                                             println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
@@ -126,26 +180,179 @@ fn main() -> Result<(), std::io::Error> {
                                                         }
                                                     }
                                                 } else {
-
+                                                    continue
                                                 }
-                                            }
-                                            "!=" => {
-
                                             }
                                             "<" => {
                                                 if comparable_one_type == "String" || comparable_two_type == "String" {
                                                     println!("{}: Strings cannot be compared: {} {}", "Error".red(), comparable_one_type.magenta(), comparable_two_type.magenta());
                                                     std::process::exit(1);
-                                                } else {
+                                                } else if comparable_one_type == "Int" && comparable_two_type == "Int" {
+                                                    if let Ok(comparable_one_value_number) = comparable_one_value.parse::<i64>() {
 
+                                                        if let Ok(comparable_two_value_number) = comparable_two_value.parse::<i64>() {
+
+                                                            if comparable_one_value_number < comparable_two_value_number {
+
+                                                                let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
+                                                                let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
+                                                                match confirmed_executable_code_vector[0] {
+                                                                    "printline" => {
+                                                                        printline::printline(confirmed_executable_code_rest, stack.clone());
+                                                                    }
+
+                                                                    "dealloc_full_stack" => {
+                                                                        stack.clear();
+                                                                        stack.shrink_to_fit();
+                                                                    }
+
+                                                                    "dealloc_certain_element" => {
+                                                                        if let Some(&element_to_remove) = tokens.get(1) {
+                                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                                            if (element_to_remove) < stack.len() {
+                                                                                stack.remove(element_to_remove);
+                                                                            } else {
+                                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                                std::process::exit(0);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    _ => {
+                                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
+                                                                        std::process::exit(1);
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                continue
+                                                            }
+                                                        }
+                                                    }
+                                                } else if comparable_one_type == "Float" && comparable_two_type == "Float" {
+                                                    if let Ok(comparable_one_value_number) = comparable_one_value.parse::<f64>() {
+
+                                                        if let Ok(comparable_two_value_number) = comparable_two_value.parse::<f64>() {
+
+                                                            if comparable_one_value_number < comparable_two_value_number {
+
+                                                                let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
+                                                                let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
+                                                                match confirmed_executable_code_vector[0] {
+                                                                    "printline" => {
+                                                                        printline::printline(confirmed_executable_code_rest, stack.clone());
+                                                                    }
+
+                                                                    "dealloc_full_stack" => {
+                                                                        stack.clear();
+                                                                        stack.shrink_to_fit();
+                                                                    }
+
+                                                                    "dealloc_certain_element" => {
+                                                                        if let Some(&element_to_remove) = tokens.get(1) {
+                                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                                            if (element_to_remove) < stack.len() {
+                                                                                stack.remove(element_to_remove);
+                                                                            } else {
+                                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                                std::process::exit(0);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    _ => {
+                                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
+                                                                        std::process::exit(1);
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                continue
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                             ">" => {
                                                 if comparable_one_type == "String" || comparable_two_type == "String" {
                                                     println!("{}: Strings cannot be compared: {} {}", "Error".red(), comparable_one_type.magenta(), comparable_two_type.magenta());
                                                     std::process::exit(1);
-                                                } else {
+                                                } else if comparable_one_type == "Int" && comparable_two_type == "Int" {
+                                                    if let Ok(comparable_one_value_number) = comparable_one_value.parse::<i64>() {
 
+                                                        if let Ok(comparable_two_value_number) = comparable_two_value.parse::<i64>() {
+
+                                                            if comparable_one_value_number > comparable_two_value_number {
+
+                                                                let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
+                                                                let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
+                                                                match confirmed_executable_code_vector[0] {
+                                                                    "printline" => {
+                                                                        printline::printline(confirmed_executable_code_rest, stack.clone());
+                                                                    }
+
+                                                                    "dealloc_full_stack" => {
+                                                                        stack.clear();
+                                                                        stack.shrink_to_fit();
+                                                                    }
+
+                                                                    "dealloc_certain_element" => {
+                                                                        if let Some(&element_to_remove) = tokens.get(1) {
+                                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                                            if (element_to_remove) < stack.len() {
+                                                                                stack.remove(element_to_remove);
+                                                                            } else {
+                                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                                std::process::exit(0);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    _ => {
+                                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
+                                                                        std::process::exit(1);
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                continue
+                                                            }
+                                                        }
+                                                    }
+                                                } else if comparable_one_type == "Float" && comparable_two_type == "Float" {
+                                                    if let Ok(comparable_one_value_number) = comparable_one_value.parse::<f64>() {
+
+                                                        if let Ok(comparable_two_value_number) = comparable_two_value.parse::<f64>() {
+
+                                                            if comparable_one_value_number > comparable_two_value_number {
+
+                                                                let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
+                                                                let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
+                                                                match confirmed_executable_code_vector[0] {
+                                                                    "printline" => {
+                                                                        printline::printline(confirmed_executable_code_rest, stack.clone());
+                                                                    }
+
+                                                                    "dealloc_full_stack" => {
+                                                                        stack.clear();
+                                                                        stack.shrink_to_fit();
+                                                                    }
+
+                                                                    "dealloc_certain_element" => {
+                                                                        if let Some(&element_to_remove) = tokens.get(1) {
+                                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                                            if (element_to_remove) < stack.len() {
+                                                                                stack.remove(element_to_remove);
+                                                                            } else {
+                                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                                std::process::exit(0);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    _ => {
+                                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
+                                                                        std::process::exit(1);
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                continue
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                             &_ => {
