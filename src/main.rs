@@ -1,10 +1,13 @@
 mod printline;
+mod test_debug;
 
 use std::env;
 
 use std::fs::{File};
 use std::io::{BufReader, BufRead};
 use colored::*;
+
+use test_debug::*;
 
 fn main() -> Result<(), std::io::Error> {
     let args: Vec<String> = env::args().collect();
@@ -76,7 +79,7 @@ fn main() -> Result<(), std::io::Error> {
                                                     }
                                                 }
                                             },
-                                             _ => {
+                                            _ => {
                                                 println!("{} {}", "Error: Unknown Type: ".red(), var_type);
                                                 std::process::exit(0)
                                             }
@@ -113,11 +116,38 @@ fn main() -> Result<(), std::io::Error> {
                                         let comparable_two_value: String = comparable_one_metadata[2].clone();
                                         match operator {
                                             "==" => {
+                                                let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
+                                                let else_index = confirmed_executable_code_vector.iter().position(|&c| c == "else");
+                                                let mut confirmed_executable_code_rest: Vec<&str> = Vec::new();
+
+                                                match else_index {
+                                                    Some(index) => {
+                                                        confirmed_executable_code_rest = confirmed_executable_code_vector[..=index].to_vec();
+                                                        confirmed_executable_code_rest.remove(0);
+                                                    },
+                                                    None => {
+                                                        println!("{}: No Else is found in if statement", "Error".red());
+                                                    },
+                                                }
+
+                                                let mut else_executable_code_vector: Vec<&str> = Vec::new();
+
+                                                for &element_else in &confirmed_executable_code_vector {
+                                                    if element_else > "else" {
+                                                        else_executable_code_vector.push(element_else);
+                                                    } else {
+                                                        break;
+                                                    }
+                                                }
+
+                                                let else_executable_code_rest: Vec<&str> = else_executable_code_vector[0..].to_vec();
+
+                                                test_debug_vec_mc(confirmed_executable_code_vector.clone());
+                                                test_debug_vec_mc(confirmed_executable_code_rest.clone());
+                                                test_debug_vec_mc(else_executable_code_vector.clone());
+                                                test_debug_vec_mc(else_executable_code_rest.clone());
+
                                                 if comparable_one_value == comparable_two_value {
-                                                    let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
-                                                    let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
-                                                    println!("{:?}", confirmed_executable_code_vector);
-                                                    println!("{:?}", confirmed_executable_code_rest);
                                                     match confirmed_executable_code_vector[0] {
                                                         "printline" => {
                                                             printline::printline(confirmed_executable_code_rest, stack.clone());
@@ -146,9 +176,36 @@ fn main() -> Result<(), std::io::Error> {
                                                         }
                                                     }
                                                 } else {
-                                                    continue
+                                                    match else_executable_code_vector[0] {
+                                                        "printline" => {
+                                                            printline::printline(else_executable_code_rest, stack.clone());
+                                                        },
+
+                                                        "dealloc_full_stack" => {
+                                                            stack.clear();
+                                                            stack.shrink_to_fit();
+                                                        },
+
+                                                        "dealloc_certain_element" => {
+                                                            if let Some(&element_to_remove) = confirmed_executable_code_rest.get(1) {
+                                                                let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                                if (element_to_remove) < stack.len() {
+                                                                    stack.remove(element_to_remove);
+                                                                } else {
+                                                                    println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                    std::process::exit(0);
+                                                                }
+                                                            }
+                                                        },
+
+                                                        _ => {
+                                                            println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
+                                                            std::process::exit(1);
+                                                        }
+                                                    }
                                                 }
-                                            }
+                                            },
+
                                             "!=" => {
                                                 if comparable_one_value != comparable_two_value {
                                                     let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
@@ -182,18 +239,52 @@ fn main() -> Result<(), std::io::Error> {
                                                 } else {
                                                     continue
                                                 }
-                                            }
+                                            },
+
                                             "<" => {
-                                                if comparable_one_type == "String" || comparable_two_type == "String" {
-                                                    println!("{}: Strings cannot be compared: {} {}", "Error".red(), comparable_one_type.magenta(), comparable_two_type.magenta());
-                                                    std::process::exit(1);
-                                                } else if comparable_one_type == "Int" && comparable_two_type == "Int" {
-                                                    if let Ok(comparable_one_value_number) = comparable_one_value.parse::<i64>() {
+                                                match (comparable_one_type.as_str(), comparable_two_type.as_str()) {
+                                                    ("Int", "Int") => {
+                                                        let comparable_one_value_integer: i64 = comparable_one_value.parse().expect("Failed at conversion of value to Signed Integer 64");
+                                                        let comparable_two_value_integer: i64 = comparable_two_value.parse().expect("Failed at conversion of value to Signed Integer 64");
 
-                                                        if let Ok(comparable_two_value_number) = comparable_two_value.parse::<i64>() {
+                                                        if comparable_one_value_integer < comparable_two_value_integer {
+                                                            let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
+                                                            let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
+                                                            match confirmed_executable_code_vector[0] {
+                                                                "printline" => {
+                                                                    printline::printline(confirmed_executable_code_rest, stack.clone());
+                                                                }
 
-                                                            if comparable_one_value_number < comparable_two_value_number {
+                                                                "dealloc_full_stack" => {
+                                                                    stack.clear();
+                                                                    stack.shrink_to_fit();
+                                                                }
 
+                                                                "dealloc_certain_element" => {
+                                                                    if let Some(&element_to_remove) = tokens.get(1) {
+                                                                        let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                                        if (element_to_remove) < stack.len() {
+                                                                            stack.remove(element_to_remove);
+                                                                        } else {
+                                                                            println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                            std::process::exit(0);
+                                                                        }
+                                                                    }
+                                                                }
+                                                                _ => {
+                                                                    println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
+                                                                    std::process::exit(1);
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+
+                                                    ("Float", "Float") => {
+                                                        let comparable_one_value_float: f64 = comparable_one_value.parse().expect("Failed to convert to Signed Floating Point 64");
+                                                        let comparable_two_value_float: f64 = comparable_two_value.parse().expect("Failed to convert to Signed Floating Point 64");
+
+                                                        if comparable_one_value_float < comparable_two_value_float {
+                                                            if comparable_one_value_float < comparable_two_value_float {
                                                                 let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
                                                                 let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
                                                                 match confirmed_executable_code_vector[0] {
@@ -222,64 +313,61 @@ fn main() -> Result<(), std::io::Error> {
                                                                         std::process::exit(1);
                                                                     }
                                                                 }
-                                                            } else {
-                                                                continue
                                                             }
                                                         }
-                                                    }
-                                                } else if comparable_one_type == "Float" && comparable_two_type == "Float" {
-                                                    if let Ok(comparable_one_value_number) = comparable_one_value.parse::<f64>() {
+                                                    },
 
-                                                        if let Ok(comparable_two_value_number) = comparable_two_value.parse::<f64>() {
-
-                                                            if comparable_one_value_number < comparable_two_value_number {
-
-                                                                let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
-                                                                let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
-                                                                match confirmed_executable_code_vector[0] {
-                                                                    "printline" => {
-                                                                        printline::printline(confirmed_executable_code_rest, stack.clone());
-                                                                    }
-
-                                                                    "dealloc_full_stack" => {
-                                                                        stack.clear();
-                                                                        stack.shrink_to_fit();
-                                                                    }
-
-                                                                    "dealloc_certain_element" => {
-                                                                        if let Some(&element_to_remove) = tokens.get(1) {
-                                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
-                                                                            if (element_to_remove) < stack.len() {
-                                                                                stack.remove(element_to_remove);
-                                                                            } else {
-                                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
-                                                                                std::process::exit(0);
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                    _ => {
-                                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
-                                                                        std::process::exit(1);
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                continue
-                                                            }
-                                                        }
+                                                    _ => {
+                                                        println!("{}: Strings or any types cannot be compared: {} {}", "Error".red(), comparable_one_type.magenta(), comparable_two_type.magenta());
+                                                        std::process::exit(1);
                                                     }
                                                 }
-                                            }
+                                            },
+
                                             ">" => {
-                                                if comparable_one_type == "String" || comparable_two_type == "String" {
-                                                    println!("{}: Strings cannot be compared: {} {}", "Error".red(), comparable_one_type.magenta(), comparable_two_type.magenta());
-                                                    std::process::exit(1);
-                                                } else if comparable_one_type == "Int" && comparable_two_type == "Int" {
-                                                    if let Ok(comparable_one_value_number) = comparable_one_value.parse::<i64>() {
+                                                match (comparable_one_type.as_str(), comparable_two_type.as_str()) {
+                                                    ("Int", "Int") => {
+                                                        let comparable_one_value_integer: i64 = comparable_one_value.parse().expect("Failed at conversion of value to Signed Integer 64");
+                                                        let comparable_two_value_integer: i64 = comparable_two_value.parse().expect("Failed at conversion of value to Signed Integer 64");
 
-                                                        if let Ok(comparable_two_value_number) = comparable_two_value.parse::<i64>() {
+                                                        if comparable_one_value_integer > comparable_two_value_integer {
+                                                            let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
+                                                            let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
+                                                            match confirmed_executable_code_vector[0] {
+                                                                "printline" => {
+                                                                    printline::printline(confirmed_executable_code_rest, stack.clone());
+                                                                }
 
-                                                            if comparable_one_value_number > comparable_two_value_number {
+                                                                "dealloc_full_stack" => {
+                                                                    stack.clear();
+                                                                    stack.shrink_to_fit();
+                                                                }
 
+                                                                "dealloc_certain_element" => {
+                                                                    if let Some(&element_to_remove) = tokens.get(1) {
+                                                                        let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                                        if (element_to_remove) < stack.len() {
+                                                                            stack.remove(element_to_remove);
+                                                                        } else {
+                                                                            println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                            std::process::exit(0);
+                                                                        }
+                                                                    }
+                                                                }
+                                                                _ => {
+                                                                    println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
+                                                                    std::process::exit(1);
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+
+                                                    ("Float", "Float") => {
+                                                        let comparable_one_value_float: f64 = comparable_one_value.parse().expect("Failed to convert to Signed Floating Point 64");
+                                                        let comparable_two_value_float: f64 = comparable_two_value.parse().expect("Failed to convert to Signed Floating Point 64");
+
+                                                        if comparable_one_value_float > comparable_two_value_float {
+                                                            if comparable_one_value_float < comparable_two_value_float {
                                                                 let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
                                                                 let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
                                                                 match confirmed_executable_code_vector[0] {
@@ -308,54 +396,18 @@ fn main() -> Result<(), std::io::Error> {
                                                                         std::process::exit(1);
                                                                     }
                                                                 }
-                                                            } else {
-                                                                continue
                                                             }
                                                         }
-                                                    }
-                                                } else if comparable_one_type == "Float" && comparable_two_type == "Float" {
-                                                    if let Ok(comparable_one_value_number) = comparable_one_value.parse::<f64>() {
+                                                    },
 
-                                                        if let Ok(comparable_two_value_number) = comparable_two_value.parse::<f64>() {
-
-                                                            if comparable_one_value_number > comparable_two_value_number {
-
-                                                                let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
-                                                                let confirmed_executable_code_rest: Vec<&str> = tokens[4..].to_vec();
-                                                                match confirmed_executable_code_vector[0] {
-                                                                    "printline" => {
-                                                                        printline::printline(confirmed_executable_code_rest, stack.clone());
-                                                                    }
-
-                                                                    "dealloc_full_stack" => {
-                                                                        stack.clear();
-                                                                        stack.shrink_to_fit();
-                                                                    }
-
-                                                                    "dealloc_certain_element" => {
-                                                                        if let Some(&element_to_remove) = tokens.get(1) {
-                                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
-                                                                            if (element_to_remove) < stack.len() {
-                                                                                stack.remove(element_to_remove);
-                                                                            } else {
-                                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
-                                                                                std::process::exit(0);
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                    _ => {
-                                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_code_vector[0].magenta());
-                                                                        std::process::exit(1);
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                continue
-                                                            }
-                                                        }
+                                                    _ => {
+                                                        println!("{}: Strings or any types cannot be compared: {} {}", "Error".red(), comparable_one_type.magenta(), comparable_two_type.magenta());
+                                                        std::process::exit(1);
                                                     }
                                                 }
-                                            }
-                                            &_ => {
+                                            },
+
+                                            _ => {
                                                 println!("{}: Unknown Operator:  {}", "Error".red(), operator.magenta());
                                                 std::process::exit(1);
                                             }
