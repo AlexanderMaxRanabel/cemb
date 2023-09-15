@@ -113,7 +113,7 @@ fn main() -> Result<(), std::io::Error> {
                                     */
                                     if let Some(&operator) = tokens.get(2) {
                                         let comparable_one_value: String = comparable_one_metadata[2].clone();
-                                        let comparable_two_value: String = comparable_one_metadata[2].clone();
+                                        let comparable_two_value: String = comparable_two_metadata[2].clone();
                                         match operator {
                                             "==" => {
                                                 let confirmed_executable_code_vector: Vec<&str> = tokens[4..].to_vec();
@@ -124,34 +124,35 @@ fn main() -> Result<(), std::io::Error> {
                                                     Some(index) => {
                                                         confirmed_executable_code_rest = confirmed_executable_code_vector[..=index].to_vec();
                                                         confirmed_executable_code_rest.remove(0);
+                                                        confirmed_executable_code_rest.pop();
                                                     },
                                                     None => {
                                                         println!("{}: No Else is found in if statement", "Error".red());
                                                     },
                                                 }
 
-                                                let mut else_executable_code_vector: Vec<&str> = Vec::new();
+                                                let else_executable_code_vector: Vec<_> = confirmed_executable_code_vector.iter()
+                                                    .skip_while(|&&x| x != "else")
+                                                    .cloned()
+                                                    .collect();
 
-                                                for &element_else in &confirmed_executable_code_vector {
-                                                    if element_else > "else" {
-                                                        else_executable_code_vector.push(element_else);
-                                                    } else {
-                                                        break;
-                                                    }
-                                                }
-
-                                                let else_executable_code_rest: Vec<&str> = else_executable_code_vector[0..].to_vec();
-
-                                                test_debug_vec_mc(confirmed_executable_code_vector.clone());
-                                                test_debug_vec_mc(confirmed_executable_code_rest.clone());
-                                                test_debug_vec_mc(else_executable_code_vector.clone());
-                                                test_debug_vec_mc(else_executable_code_rest.clone());
+                                                let else_executable_code_rest: Vec<&str> = else_executable_code_vector[2..].to_vec();
+                                                /*
+                                                _test_debug_vec_mc(confirmed_executable_code_vector.clone());
+                                                _test_debug_string("INDICATOR 1".to_string());
+                                                _test_debug_vec_mc(else_executable_code_vector.clone());
+                                                _test_debug_string("INDICATOR 2".to_string());
+                                                _test_debug_vec_mc(confirmed_executable_code_rest.clone());
+                                                _test_debug_string("INDICATOR 3".to_string());
+                                                _test_debug_vec_mc(else_executable_code_rest.clone());
+                                                _test_debug_string("INDICATOR 4".to_string());
+                                                _test_debug_string(else_index.clone().expect("Failed to clone").to_string()); */
 
                                                 if comparable_one_value == comparable_two_value {
                                                     match confirmed_executable_code_vector[0] {
                                                         "printline" => {
                                                             printline::printline(confirmed_executable_code_rest, stack.clone());
-                                                        }
+                                                        },
 
                                                         "dealloc_full_stack" => {
                                                             stack.clear();
