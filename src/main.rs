@@ -163,7 +163,29 @@ fn main() -> Result<(), std::io::Error> {
                                         },  
 
                                         "!=" => {
+                                            if comparable_one_value != comparable_two_value {
+                                                match confirmed_executable_tokens[0] {
+                                                    "printline" => {
+                                                        printline::printline(confirmed_executable_tokens.clone(), stack.clone());
+                                                    },
 
+                                                    _ => {
+                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
+                                                        std::process::exit(1);
+                                                    }, 
+                                                }
+                                            } else {
+                                                match confirmed_executable_tokens[0] {
+                                                    "printline" => {
+                                                        printline::printline(else_executable_tokens.clone(), stack.clone());
+                                                    },
+
+                                                    _ => {
+                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
+                                                        std::process::exit(1);
+                                                    },
+                                                }
+                                            }
                                         },
 
                                         ">" => {
