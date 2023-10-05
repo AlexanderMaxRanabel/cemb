@@ -1,15 +1,12 @@
 mod printline;
-mod test_debug;
+mod external;
 
 use std::env;
 
 use std::fs::{File};
 use std::io::{BufReader, BufRead};
-use std::process::Command;
 
 use colored::*;
-
-use test_debug::*;
 
 fn main() -> Result<(), std::io::Error> {
     let args: Vec<String> = env::args().collect();
@@ -81,6 +78,7 @@ fn main() -> Result<(), std::io::Error> {
                                                     }
                                                 }
                                             },
+
                                             _ => {
                                                 println!("{} {}", "Error: Unknown Type: ".red(), var_type);
                                                 std::process::exit(0)
@@ -93,6 +91,7 @@ fn main() -> Result<(), std::io::Error> {
                             }
                         }
                     },
+                    
                     "printline" => {
                         printline::printline(tokens, stack.clone());
                     },
@@ -133,10 +132,8 @@ fn main() -> Result<(), std::io::Error> {
                                        .take_while(|&&c| c != "end")
                                        .collect();
 
-                                    let else_executable_tokens: Vec<&str> = confirmed_executable_tokens_double.iter().map(|&&s| s).collect();
-                                    let confirmed_executable_tokens: Vec<&str> = else_executable_tokens_double.iter().map(|&&s| s).collect();
-
-                                    _test_debug_vec_mc(confirmed_executable_tokens.clone());
+                                    let else_executable_tokens: Vec<&str> = else_executable_tokens_double.iter().map(|&&s| s).collect();
+                                    let confirmed_executable_tokens: Vec<&str> = confirmed_executable_tokens_double.iter().map(|&&s| s).collect();
 
                                     match operator {
                                         "==" => {
@@ -188,21 +185,46 @@ fn main() -> Result<(), std::io::Error> {
                     },
 
                     "external" => {
-                        if let Some(&external_casm_file) = tokens.get(1) {
-                            let cemb_run = Command::new("cemb")
-                                .arg(external_casm_file)
-                                .output()
-                                .expect("Failed to run cemb");
+                        external::external(tokens);
+                    },
 
-                            let stdout = String::from_utf8_lossy(&cemb_run.stdout);
-                            let stderr = String::from_utf8_lossy(&cemb_run.stderr);
+                    "forever" => {
+                        if let Some(&main_keyword) = tokens.get(1) {
+                            let forever_loop_executable_code: Vec<&str> = tokens[1..].to_vec();
+                            
+                            loop {
+                                match main_keyword {
+                                    "printline" => {
+                                         printline::printline(forever_loop_executable_code.clone(), stack.clone());
+                                    },
 
-                            if cemb_run.status.success() {
-                                println!("{}", stdout);
-                            } else {
-                               println!("{}: Failed: {}", "Error".red(), stderr.magenta());
-                               std::process::exit(1);
-                            }
+                                    "external" => {
+                                        external::external(forever_loop_executable_code.clone());
+                                    },
+
+                                    "dealloc_full_stack" => {
+                                        stack.clear();
+                                        stack.shrink_to_fit();
+                                    },
+
+                                    "dealloc_certain_element" => {
+                                        if let Some(&element_to_remove) = forever_loop_executable_code.clone().get(1) {
+                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                            if (element_to_remove) < stack.len() {
+                                                stack.remove(element_to_remove);
+                                            } else {
+                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                std::process::exit(0);
+                                            }
+                                        }
+                                    },
+
+                                    _ => {
+                                        println!("{}: Unknown Keyword for Forever loop: {}", "Error".red(), main_keyword);
+                                        std::process::exit(1);
+                                    },
+                                }
+                            }    
                         }
                     },
 
@@ -222,8 +244,9 @@ fn main() -> Result<(), std::io::Error> {
                             }
                         }
                     },
+
                     _ => {
-                        println!("{} {}", "Error: Unknown Keyword: ".red(), tokens[0]);
+                        println!("{}: Unknown Keyword: {}", "Error".red(), tokens[0]);
                         std::process::exit(0)
                     },
                 }
