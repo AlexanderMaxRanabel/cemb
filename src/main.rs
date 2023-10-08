@@ -1,5 +1,6 @@
 mod printline;
 mod external;
+mod memory_management;
 
 use std::env;
 
@@ -143,6 +144,24 @@ fn main() -> Result<(), std::io::Error> {
                                                         printline::printline(confirmed_executable_tokens.clone(), stack.clone());
                                                     },
 
+
+                                                    "dealloc_full_stack" => {
+                                                        stack.clear();
+                                                        stack.shrink_to_fit();
+                                                    },
+
+                                                    "dealloc_certain_element" => {
+                                                        if let Some(&element_to_remove) = confirmed_executable_tokens.clone().get(1) {
+                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                            if (element_to_remove) < stack.len() {
+                                                            stack.remove(element_to_remove);
+                                                            } else {
+                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                std::process::exit(0);
+                                                            }
+                                                        }
+                                                    },
+
                                                     _ => {
                                                         println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
                                                         std::process::exit(1);
@@ -152,6 +171,24 @@ fn main() -> Result<(), std::io::Error> {
                                                 match confirmed_executable_tokens[0] {
                                                     "printline" => {
                                                         printline::printline(else_executable_tokens.clone(), stack.clone());
+                                                    },
+
+
+                                                    "dealloc_full_stack" => {
+                                                        stack.clear();
+                                                        stack.shrink_to_fit();
+                                                    },
+
+                                                    "dealloc_certain_element" => {
+                                                        if let Some(&element_to_remove) = else_executable_tokens.clone().get(1) {
+                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                            if (element_to_remove) < stack.len() {
+                                                            stack.remove(element_to_remove);
+                                                            } else {
+                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                std::process::exit(0);
+                                                            }
+                                                        }
                                                     },
 
                                                     _ => {
@@ -169,6 +206,23 @@ fn main() -> Result<(), std::io::Error> {
                                                         printline::printline(confirmed_executable_tokens.clone(), stack.clone());
                                                     },
 
+                                                    "dealloc_full_stack" => {
+                                                        stack.clear();
+                                                        stack.shrink_to_fit();
+                                                    },
+
+                                                    "dealloc_certain_element" => {
+                                                        if let Some(&element_to_remove) = confirmed_executable_tokens.clone().get(1) {
+                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                            if (element_to_remove) < stack.len() {
+                                                            stack.remove(element_to_remove);
+                                                            } else {
+                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                std::process::exit(0);
+                                                            }
+                                                        }
+                                                    },
+
                                                     _ => {
                                                         println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
                                                         std::process::exit(1);
@@ -178,6 +232,23 @@ fn main() -> Result<(), std::io::Error> {
                                                 match confirmed_executable_tokens[0] {
                                                     "printline" => {
                                                         printline::printline(else_executable_tokens.clone(), stack.clone());
+                                                    },
+
+                                                    "dealloc_full_stack" => {
+                                                        stack.clear();
+                                                        stack.shrink_to_fit();
+                                                    },
+
+                                                    "dealloc_certain_element" => {
+                                                        if let Some(&element_to_remove) = else_executable_tokens.clone().get(1) {
+                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
+                                                            if (element_to_remove) < stack.len() {
+                                                            stack.remove(element_to_remove);
+                                                            } else {
+                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
+                                                                std::process::exit(0);
+                                                            }
+                                                        }
                                                     },
 
                                                     _ => {
@@ -251,20 +322,11 @@ fn main() -> Result<(), std::io::Error> {
                     },
 
                     "dealloc_full_stack" => {
-                        stack.clear();
-                        stack.shrink_to_fit();
+                        stack = memory_management::dealloc_full_stack(stack);
                     },
 
                     "dealloc_certain_element" => {
-                        if let Some(&element_to_remove) = tokens.get(1) {
-                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
-                            if (element_to_remove) < stack.len() {
-                                stack.remove(element_to_remove);
-                            } else {
-                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
-                                std::process::exit(0);
-                            }
-                        }
+                        stack = memory_management::dealloc_certain_element(stack, tokens.clone());
                     },
 
                     _ => {
