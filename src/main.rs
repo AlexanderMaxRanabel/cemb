@@ -146,20 +146,11 @@ fn main() -> Result<(), std::io::Error> {
 
 
                                                     "dealloc_full_stack" => {
-                                                        stack.clear();
-                                                        stack.shrink_to_fit();
+                                                        stack = memory_management::dealloc_full_stack(stack);
                                                     },
 
                                                     "dealloc_certain_element" => {
-                                                        if let Some(&element_to_remove) = confirmed_executable_tokens.clone().get(1) {
-                                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
-                                                            if (element_to_remove) < stack.len() {
-                                                            stack.remove(element_to_remove);
-                                                            } else {
-                                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
-                                                                std::process::exit(0);
-                                                            }
-                                                        }
+                                                        stack = memory_management::dealloc_certain_element(stack, confirmed_executable_tokens);
                                                     },
 
                                                     _ => {
@@ -327,6 +318,10 @@ fn main() -> Result<(), std::io::Error> {
 
                     "dealloc_certain_element" => {
                         stack = memory_management::dealloc_certain_element(stack, tokens.clone());
+                    },
+
+                    "//" => {
+                        continue;
                     },
 
                     _ => {
