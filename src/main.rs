@@ -259,23 +259,6 @@ fn main() -> Result<(), std::io::Error> {
                                         external::external(forever_loop_executable_code.clone());
                                     },
 
-                                    "dealloc_full_stack" => {
-                                        stack.clear();
-                                        stack.shrink_to_fit();
-                                    },
-
-                                    "dealloc_certain_element" => {
-                                        if let Some(&element_to_remove) = forever_loop_executable_code.clone().get(1) {
-                                            let element_to_remove: usize = element_to_remove.parse().expect("Failed to convert to usize");
-                                            if (element_to_remove) < stack.len() {
-                                                stack.remove(element_to_remove);
-                                            } else {
-                                                println!("{} {}", " Error: Cannot remove element because it does not exist".red(), element_to_remove.to_string());
-                                                std::process::exit(0);
-                                            }
-                                        }
-                                    },
-
                                     _ => {
                                         println!("{}: Unknown Keyword for Forever loop: {}", "Error".red(), main_keyword);
                                         std::process::exit(1);
