@@ -159,7 +159,7 @@ fn main() -> Result<(), std::io::Error> {
                                                     }, 
                                                 }
                                             } else {
-                                                match confirmed_executable_tokens[0] {
+                                                match else_executable_tokens[0] {
                                                     "printline" => {
                                                         printline::printline(else_executable_tokens.clone(), stack.clone());
                                                     },
@@ -202,7 +202,7 @@ fn main() -> Result<(), std::io::Error> {
                                                     }, 
                                                 }
                                             } else {
-                                                match confirmed_executable_tokens[0] {
+                                                match else_executable_tokens[0] {
                                                     "printline" => {
                                                         printline::printline(else_executable_tokens.clone(), stack.clone());
                                                     },
@@ -224,11 +224,115 @@ fn main() -> Result<(), std::io::Error> {
                                         },
 
                                         ">" => {
+                                            let mut comparable_one_value_number: f64 = 0.0;
+                                            let mut comparable_two_value_number: f64 = 0.0;
 
+                                            match (comparable_one_type.as_str(), comparable_two_type.as_str()) {
+                                                ("Float", "Float") | ("Int", "Int") => {
+                                                    comparable_one_value_number = comparable_one_value.clone().parse().expect("Failed to parse");
+                                                    comparable_two_value_number = comparable_two_value.clone().parse().expect("Failed to parse");
+                                                },
+
+                                                _ => {
+                                                    println!("{}: Undesired Types: {} {}. Code: {}", "Error".red(), comparable_one_type.cyan(), comparable_two_type.cyan(), "HRK-MRKM-1Q84".magenta());
+                                                },
+                                            }
+
+                                            if comparable_one_value_number > comparable_two_value_number {
+                                                match confirmed_executable_tokens[0] {
+                                                    "printline" => {
+                                                        printline::printline(confirmed_executable_tokens.clone(), stack.clone());
+                                                    },
+
+                                                    "dealloc_full_stack" => {
+                                                        stack = memory_management::dealloc_full_stack(stack);
+                                                    },
+
+                                                    "dealloc_certain_element" => {
+                                                        stack = memory_management::dealloc_certain_element(stack, confirmed_executable_tokens);
+                                                    },
+
+                                                    _ => {
+                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
+                                                        std::process::exit(1);
+                                                    }, 
+                                                } 
+                                            } else {
+                                                match else_executable_tokens[0] {
+                                                    "printline" => {
+                                                        printline::printline(else_executable_tokens.clone(), stack.clone());
+                                                    },
+
+                                                    "dealloc_full_stack" => {
+                                                        stack = memory_management::dealloc_full_stack(stack);
+                                                    },
+
+                                                    "dealloc_certain_element" => {
+                                                        stack = memory_management::dealloc_certain_element(stack, else_executable_tokens);
+                                                    },
+
+                                                    _ => {
+                                                        println!("{}: Unknown Keyword: {}", "Error".red(), else_executable_tokens[0].magenta());
+                                                        std::process::exit(1);
+                                                    }, 
+                                                }
+                                            }
                                         },
 
                                         "<" => {
+                                            let mut comparable_one_value_number: f64 = 0.0;
+                                            let mut comparable_two_value_number: f64 = 0.0;
 
+                                            match (comparable_one_type.as_str(), comparable_two_type.as_str()) {
+                                                ("Float", "Float") | ("Int", "Int") => {
+                                                    comparable_one_value_number = comparable_one_value.clone().parse().expect("Failed to parse");
+                                                    comparable_two_value_number = comparable_two_value.clone().parse().expect("Failed to parse");
+                                                },
+
+                                                _ => {
+                                                    println!("{}: Undesired Types: {} {}. Code: {}", "Error".red(), comparable_one_type.cyan(), comparable_two_type.cyan(), "HRK-MRKM-1Q84".magenta());
+                                                },
+                                            }
+
+                                            if comparable_one_value_number < comparable_two_value_number {
+                                                match confirmed_executable_tokens[0] {
+                                                    "printline" => {
+                                                        printline::printline(confirmed_executable_tokens.clone(), stack.clone());
+                                                    },
+
+                                                    "dealloc_full_stack" => {
+                                                        stack = memory_management::dealloc_full_stack(stack);
+                                                    },
+
+                                                    "dealloc_certain_element" => {
+                                                        stack = memory_management::dealloc_certain_element(stack, confirmed_executable_tokens);
+                                                    },
+
+                                                    _ => {
+                                                        println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
+                                                        std::process::exit(1);
+                                                    }, 
+                                                } 
+                                            } else {
+                                                match else_executable_tokens[0] {
+                                                    "printline" => {
+                                                        printline::printline(else_executable_tokens.clone(), stack.clone());
+                                                    },
+
+                                                    "dealloc_full_stack" => {
+                                                        stack = memory_management::dealloc_full_stack(stack);
+                                                    },
+
+                                                    "dealloc_certain_element" => {
+                                                        stack = memory_management::dealloc_certain_element(stack, else_executable_tokens);
+                                                    },
+
+                                                    _ => {
+                                                        println!("{}: Unknown Keyword: {}", "Error".red(), else_executable_tokens[0].magenta());
+                                                        std::process::exit(1);
+                                                    }, 
+                                                }
+                                            }
                                         },
                                         
                                         _ => {
