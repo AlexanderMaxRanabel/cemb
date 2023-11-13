@@ -6,6 +6,28 @@ use crate::{
 
 use colored::*;
 
+fn executable_runner(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> { //Much better than writing the same stuff 7 thousand times
+    match tokens[0] {
+        "printline" => {
+            printline(tokens.clone(), stack.clone());
+        },
+
+        "dealloc_full_stack" => {
+            stack = dealloc_full_stack(stack);
+        },
+
+        "dealloc_certain_element" => {
+            stack = dealloc_certain_element(stack, tokens);
+        },
+
+        _ => {
+            println!("{}: Unknown Keyword: {}", "Error".red(), tokens[0].magenta());
+            std::process::exit(1);
+        }, 
+    }
+    return stack;
+}
+
 pub fn if_expr(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
     if let Some(&comparable_one_address_raw) = tokens.get(1) {
     if let Some(&comparable_two_address_raw) = tokens.get(3) {
@@ -47,24 +69,7 @@ pub fn if_expr(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
             match operator {
                 "==" => {
                     if comparable_one_value == comparable_two_value {
-                        match confirmed_executable_tokens[0] {
-                            "printline" => {
-                                printline(confirmed_executable_tokens.clone(), stack.clone());
-                            },
-
-                            "dealloc_full_stack" => {
-                                stack = dealloc_full_stack(stack);
-                            },
-
-                            "dealloc_certain_element" => {
-                                stack = dealloc_certain_element(stack, confirmed_executable_tokens);
-                            },
-
-                            _ => {
-                                println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
-                                std::process::exit(1);
-                            }, 
-                        }
+                        stack = executable_runner(confirmed_executable_tokens.clone(), stack.clone());
                     } else {
                         match else_executable_tokens[0] {
                             "printline" => {

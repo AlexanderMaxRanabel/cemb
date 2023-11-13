@@ -109,7 +109,7 @@ fn main() -> Result<(), std::io::Error> {
                     },
 
                     "forever" => {
-                        forever::forever(tokens.clone(), stack.clone());
+                        stack = forever::forever(tokens.clone(), stack.clone());
                     },
 
                     "dealloc_full_stack" => {
