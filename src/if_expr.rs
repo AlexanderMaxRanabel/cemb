@@ -20,6 +20,10 @@ fn executable_runner(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
             stack = dealloc_certain_element(stack, tokens);
         },
 
+        "external" => {
+            external(tokens);
+        },
+
         _ => {
             println!("{}: Unknown Keyword: {}", "Error".red(), tokens[0].magenta());
             std::process::exit(1);
@@ -69,68 +73,17 @@ pub fn if_expr(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
             match operator {
                 "==" => {
                     if comparable_one_value == comparable_two_value {
-                        stack = executable_runner(confirmed_executable_tokens.clone(), stack.clone());
+                        stack = executable_runner(confirmed_executable_tokens.clone(), stack);
                     } else {
-                        match else_executable_tokens[0] {
-                            "printline" => {
-                                printline(else_executable_tokens.clone(), stack.clone());
-                            },
-
-                            "dealloc_full_stack" => {
-                                stack = dealloc_full_stack(stack);
-                            },
-
-                            "dealloc_certain_element" => {
-                                stack = dealloc_certain_element(stack, else_executable_tokens);                                                        
-                            },
-
-                            _ => {
-                                println!("{}: Unknown Keyword: {}", "Error".red(), else_executable_tokens[0].magenta());
-                                std::process::exit(1);
-                            },
-                        }
-                    }
+                        stack = executable_runner(else_executable_tokens.clone(), stack);
+                    } 
                 },  
 
                 "!=" => {
                     if comparable_one_value != comparable_two_value {
-                        match confirmed_executable_tokens[0] {
-                            "printline" => {
-                                printline(confirmed_executable_tokens.clone(), stack.clone());
-                            },
-
-                            "dealloc_full_stack" => {
-                                stack = dealloc_full_stack(stack);
-                            },
-
-                            "dealloc_certain_element" => {
-                                stack = dealloc_certain_element(stack, confirmed_executable_tokens);
-                            },
-
-                            _ => {
-                                println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
-                                std::process::exit(1);
-                            }, 
-                        }
+                        stack = executable_runner(confirmed_executable_tokens.clone(), stack);
                     } else {
-                        match else_executable_tokens[0] {
-                            "printline" => {
-                                printline(else_executable_tokens.clone(), stack.clone());
-                            },
-
-                            "dealloc_full_stack" => {
-                                stack = dealloc_full_stack(stack);
-                            },
-
-                            "dealloc_certain_element" => {
-                                stack = dealloc_certain_element(stack, else_executable_tokens)
-                            }
-
-                            _ => {
-                                println!("{}: Unknown Keyword: {}", "Error".red(), else_executable_tokens[0].magenta());
-                                std::process::exit(1);
-                            },
-                        }
+                        stack = executable_runner(else_executable_tokens.clone(), stack);
                     }
                 },
 
@@ -150,43 +103,9 @@ pub fn if_expr(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
                     }
 
                     if comparable_one_value_number > comparable_two_value_number {
-                        match confirmed_executable_tokens[0] {
-                            "printline" => {
-                                printline(confirmed_executable_tokens.clone(), stack.clone());
-                            },
-
-                            "dealloc_full_stack" => {
-                                stack = dealloc_full_stack(stack);
-                            },
-
-                            "dealloc_certain_element" => {
-                                stack = dealloc_certain_element(stack, confirmed_executable_tokens);
-                            },
-
-                            _ => {
-                                println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
-                                std::process::exit(1);
-                            }, 
-                        } 
+                        stack = executable_runner(confirmed_executable_tokens.clone(), stack);
                     } else {
-                        match else_executable_tokens[0] {
-                            "printline" => {
-                                printline(else_executable_tokens.clone(), stack.clone());
-                            },
-
-                            "dealloc_full_stack" => {
-                                stack = dealloc_full_stack(stack);
-                            },
-
-                            "dealloc_certain_element" => {
-                                stack = dealloc_certain_element(stack, else_executable_tokens);
-                            },
-
-                            _ => {
-                                println!("{}: Unknown Keyword: {}", "Error".red(), else_executable_tokens[0].magenta());
-                                std::process::exit(1);
-                            }, 
-                        }
+                        stack = executable_runner(else_executable_tokens.clone(), stack);
                     }
                 },
 
@@ -206,43 +125,9 @@ pub fn if_expr(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
                     }
 
                     if comparable_one_value_number < comparable_two_value_number {
-                        match confirmed_executable_tokens[0] {
-                            "printline" => {
-                                printline(confirmed_executable_tokens.clone(), stack.clone());
-                            },
-
-                            "dealloc_full_stack" => {
-                                stack = dealloc_full_stack(stack);
-                            },
-
-                            "dealloc_certain_element" => {
-                                stack = dealloc_certain_element(stack, confirmed_executable_tokens);
-                            },
-
-                            _ => {
-                                println!("{}: Unknown Keyword: {}", "Error".red(), confirmed_executable_tokens[0].magenta());
-                                std::process::exit(1);
-                            }, 
-                        } 
+                         stack = executable_runner(confirmed_executable_tokens.clone(), stack);
                     } else {
-                        match else_executable_tokens[0] {
-                            "printline" => {
-                                printline(else_executable_tokens.clone(), stack.clone());
-                            },
-
-                            "dealloc_full_stack" => {
-                                stack = dealloc_full_stack(stack);
-                            },
-
-                            "dealloc_certain_element" => {
-                                stack = dealloc_certain_element(stack, else_executable_tokens);
-                            },
-
-                            _ => {
-                                println!("{}: Unknown Keyword: {}", "Error".red(), else_executable_tokens[0].magenta());
-                                std::process::exit(1);
-                            }, 
-                        }
+                         stack = executable_runner(else_executable_tokens.clone(), stack);
                     }
                 },
                 
