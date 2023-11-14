@@ -21,7 +21,8 @@ fn executable_runner(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
         },
 
         "external" => {
-            external(tokens);
+           let file_stdout = external(tokens);
+           println!("{}", file_stdout);
         },
 
         _ => {

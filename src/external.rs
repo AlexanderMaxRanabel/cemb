@@ -3,15 +3,8 @@ use std::process::Command;
 
 pub fn external(tokens: Vec<&str>) -> String {
     let mut stdout: String = "".to_string();
-    let mut file_name_token: i32 = 0;
-
-    if tokens.len() < 6 {
-        file_name_token = 1;
-    } else if tokens.len() == 6 {
-        file_name_token = 5;
-    }
-   
-    if let Some(&external_casm_file) = tokens.get(file_name_token as usize) {
+    
+    if let Some(&external_casm_file) = tokens.get(1) {
         let cemb_run = Command::new("cemb")
             .arg(external_casm_file)
             .output()
