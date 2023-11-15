@@ -105,8 +105,7 @@ fn main() -> Result<(), std::io::Error> {
                     },
 
                     "external" => {
-                        let file_stdout = external::external(tokens);
-                        println!("{}", file_stdout);
+                        external::external(tokens);
                     },
 
                     "forever" => {

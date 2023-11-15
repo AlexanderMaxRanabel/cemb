@@ -1,0 +1,4 @@
+let x :: Float = 4.3
+let y :: Float = 3.3
+printline cemb.stack
+if 0 == 1 do printline cemb.stack else forever if 0 != 1 do printline cemb.fromstack 1 else printline cemb.fromstack 0 end end

@@ -2,7 +2,8 @@ use colored::*;
 use std::process::Command;
 
 pub fn external(tokens: Vec<&str>) -> String {
-    let mut stdout: String = "".to_string();
+    println!("{}: Experimental. Assumes cemb is in the path", "Warning".yellow().bold());
+    let mut result: String = "".to_string();
     
     if let Some(&external_casm_file) = tokens.get(1) {
         let cemb_run = Command::new("cemb")
@@ -10,13 +11,11 @@ pub fn external(tokens: Vec<&str>) -> String {
             .output()
             .expect("Failed to run cemb");
 
-        stdout = String::from_utf8_lossy(&cemb_run.stdout).to_string();
-        let stderr = String::from_utf8_lossy(&cemb_run.stderr);
-
         if !cemb_run.status.success() {
-            println!("{}: Failed: {}", "Error".red(), stderr.magenta());
-            std::process::exit(1);
+            result = String::from_utf8_lossy(&cemb_run.stderr).to_string();
+        } else {
+            result = String::from_utf8_lossy(&cemb_run.stdout).to_string();
         }
     }
-    return stdout;
+    return result;
 }

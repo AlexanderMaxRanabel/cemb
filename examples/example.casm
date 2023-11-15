@@ -1,0 +1,3 @@
+let str1 :: String = 'This is a string'
+let str2 :: String = 'This might be a string'
+printline cemb.stack

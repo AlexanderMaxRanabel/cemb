@@ -1,7 +1,8 @@
 use crate::{
     memory_management::*,
     printline::*,
-    external::*
+    external::*,
+    forever::*
 };
 
 use colored::*;
@@ -23,6 +24,10 @@ fn executable_runner(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
         "external" => {
            let file_stdout = external(tokens);
            println!("{}", file_stdout);
+        },
+
+        "forever" => {
+           stack = forever(tokens.clone(), stack.clone()); 
         },
 
         _ => {
