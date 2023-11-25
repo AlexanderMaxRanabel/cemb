@@ -3,6 +3,7 @@ mod external;
 mod memory_management;
 mod if_expr;
 mod forever;
+mod while_loop;
 
 use std::env;
 
@@ -118,6 +119,10 @@ fn main() -> Result<(), std::io::Error> {
 
                     "dealloc_certain_element" => {
                         stack = memory_management::dealloc_certain_element(stack, tokens.clone());
+                    },
+
+                    "while" | "for" => {
+                        stack = while_loop::while_loop(tokens.clone(), stack.clone());
                     },
 
                     "//" => {
