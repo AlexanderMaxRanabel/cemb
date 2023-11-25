@@ -2,7 +2,8 @@ use crate::{
     memory_management::*,
     printline::*,
     external::*,
-    forever::*
+    forever::*,
+    while_loop::*
 };
 
 use colored::*;
@@ -28,6 +29,10 @@ fn executable_runner(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
 
         "forever" => {
            stack = forever(tokens.clone(), stack.clone()); 
+        },
+
+        "while" => {
+            stack = while_loop(tokens.clone(), stack.clone());
         },
 
         _ => {
