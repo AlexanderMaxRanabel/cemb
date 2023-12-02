@@ -1,14 +1,14 @@
-mod printline;
 mod external;
-mod memory_management;
-mod if_expr;
 mod forever;
+mod if_expr;
+mod memory_management;
+mod printline;
 mod while_loop;
 
 use std::env;
 
-use std::fs::{File};
-use std::io::{BufReader, BufRead};
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 use colored::*;
 
@@ -39,9 +39,15 @@ fn main() -> Result<(), std::io::Error> {
                                             "String" => {
                                                 if let Some(&string_first_part) = tokens.get(5) {
                                                     if let Some(&string_last_part) = tokens.last() {
-                                                        if string_first_part.starts_with("'") && string_last_part.ends_with("'") {
-                                                            let value: String = tokens[5..].join(" ");
-                                                            let metadata: String = format!("{} {} {}", var_name, var_type, value);
+                                                        if string_first_part.starts_with("'")
+                                                            && string_last_part.ends_with("'")
+                                                        {
+                                                            let value: String =
+                                                                tokens[5..].join(" ");
+                                                            let metadata: String = format!(
+                                                                "{} {} {}",
+                                                                var_name, var_type, value
+                                                            );
                                                             stack.push(metadata);
                                                         } else {
                                                             println!("Usage: let str :: String = 'Hello world'");
@@ -49,43 +55,64 @@ fn main() -> Result<(), std::io::Error> {
                                                         }
                                                     }
                                                 }
-                                            },
+                                            }
 
                                             "Int" => {
                                                 if let Some(&value) = tokens.get(5) {
                                                     if let Ok(_number) = value.parse::<i64>() {
-                                                        let metadata: String = format!("{} {} {}", var_name, var_type, value);
+                                                        let metadata: String = format!(
+                                                            "{} {} {}",
+                                                            var_name, var_type, value
+                                                        );
                                                         stack.push(metadata);
                                                     } else {
-                                                        println!("{} {}", "Not a piece of valid integer: ".red(), value);
+                                                        println!(
+                                                            "{} {}",
+                                                            "Not a piece of valid integer: ".red(),
+                                                            value
+                                                        );
                                                     }
                                                 }
-                                            },
+                                            }
 
                                             "Float" => {
                                                 if let Some(&value) = tokens.get(5) {
                                                     if let Ok(_number) = value.parse::<f64>() {
-                                                        let metadata: String = format!("{} {} {}", var_name, var_type, value);
+                                                        let metadata: String = format!(
+                                                            "{} {} {}",
+                                                            var_name, var_type, value
+                                                        );
                                                         stack.push(metadata);
                                                     } else {
-                                                        println!("{} {}", "Not a piece of float: ".red(), value);
+                                                        println!(
+                                                            "{} {}",
+                                                            "Not a piece of float: ".red(),
+                                                            value
+                                                        );
                                                     }
                                                 }
-                                            },
+                                            }
 
                                             "Char" => {
                                                 if let Some(&value) = tokens.get(5) {
                                                     if value.len() == 1 {
-                                                        let metadata: String = format!("{} {} {}", var_name, var_type, value);
+                                                        let metadata: String = format!(
+                                                            "{} {} {}",
+                                                            var_name, var_type, value
+                                                        );
                                                         stack.push(metadata);
                                                     } else {
                                                         println!("{}: {}", "Not a valid piece of char due to length".red(), value);
                                                     }
                                                 }
-                                            },
+                                            }
 
                                             _ => {
-                                                println!("{} {}", "Error: Unknown Type: ".red(), var_type);
+                                                println!(
+                                                    "{} {}",
+                                                    "Error: Unknown Type: ".red(),
+                                                    var_type
+                                                );
                                                 std::process::exit(0)
                                             }
                                         }
@@ -95,44 +122,44 @@ fn main() -> Result<(), std::io::Error> {
                                 }
                             }
                         }
-                    },
-                    
+                    }
+
                     "printline" => {
                         printline::printline(tokens, stack.clone());
-                    },
+                    }
 
                     "if" => {
-                        stack = if_expr::if_expr(tokens.clone(), stack.clone()); 
-                    },
+                        stack = if_expr::if_expr(tokens.clone(), stack.clone());
+                    }
 
                     "external" => {
                         external::external(tokens);
-                    },
+                    }
 
                     "forever" => {
                         stack = forever::forever(tokens.clone(), stack.clone());
-                    },
+                    }
 
                     "dealloc_full_stack" => {
                         stack = memory_management::dealloc_full_stack(stack);
-                    },
+                    }
 
                     "dealloc_certain_element" => {
                         stack = memory_management::dealloc_certain_element(stack, tokens.clone());
-                    },
+                    }
 
                     "while" | "for" => {
                         stack = while_loop::while_loop(tokens.clone(), stack.clone());
-                    },
+                    }
 
                     "//" => {
                         continue;
-                    },
+                    }
 
                     _ => {
                         println!("{}: Unknown Keyword: {}", "Error".red(), tokens[0]);
                         std::process::exit(0)
-                    },
+                    }
                 }
             }
         }
