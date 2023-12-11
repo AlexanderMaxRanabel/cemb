@@ -73,20 +73,22 @@ fn main() -> Result<(), std::io::Error> {
                                                 if let Some(&value) = tokens.get(5) {
                                                     if value == "cemb.input" {
                                                         let inputed_value = input::get_input();
-                                                        if let Ok(_number) = inputed_value.parse::<i64>() {
+                                                        if let Ok(_number) =
+                                                            inputed_value.parse::<i64>()
+                                                        {
                                                             let metadata: String = format!(
                                                                 "{} {} {}",
                                                                 var_name, var_type, inputed_value
                                                             );
                                                             stack.push(metadata);
                                                         } else {
-                                                           println!(
+                                                            println!(
                                                                 "{} {}",
                                                                 "Not a piece of valid integer: "
                                                                     .red(),
                                                                 value
                                                             );
-                                                            std::process::exit(1); 
+                                                            std::process::exit(1);
                                                         }
                                                     } else {
                                                         if let Ok(_number) = value.parse::<i64>() {
@@ -109,24 +111,26 @@ fn main() -> Result<(), std::io::Error> {
                                             }
 
                                             "Float" => {
-                                               if let Some(&value) = tokens.get(5) {
+                                                if let Some(&value) = tokens.get(5) {
                                                     if value == "cemb.input" {
                                                         let inputed_value = input::get_input();
-                                                        if let Ok(_number) = inputed_value.parse::<f64>() {
+                                                        if let Ok(_number) =
+                                                            inputed_value.parse::<f64>()
+                                                        {
                                                             let metadata: String = format!(
                                                                 "{} {} {}",
                                                                 var_name, var_type, inputed_value
                                                             );
                                                             stack.push(metadata);
                                                         } else {
-                                                           println!(
+                                                            println!(
                                                                 "{} {}",
                                                                 "Not a piece of valid float: "
                                                                     .red(),
                                                                 value
                                                             );
-                                                            std::process::exit(1); 
-                                                        } 
+                                                            std::process::exit(1);
+                                                        }
                                                     } else {
                                                         if let Ok(_number) = value.parse::<f64>() {
                                                             let metadata: String = format!(
@@ -144,7 +148,7 @@ fn main() -> Result<(), std::io::Error> {
                                                             std::process::exit(1);
                                                         }
                                                     }
-                                                } 
+                                                }
                                             }
 
                                             "Char" => {

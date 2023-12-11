@@ -6,19 +6,21 @@ pub fn external(tokens: Vec<&str>) -> String {
         "{}: Experimental. Assumes cemb is in the path",
         "Warning".yellow().bold()
     );
-    let mut result: String = "".to_string();
 
-    if let Some(&external_casm_file) = tokens.get(1) {
-        let cemb_run = Command::new("cemb")
-            .arg(external_casm_file)
+    let mut result = String::new();
+    if let Some(&file) = tokens.get(1) {
+        let output = Command::new("cemb")
+            .arg(file)
             .output()
-            .expect("Failed to run cemb");
+            .expect("Failed to run command");
 
-        if !cemb_run.status.success() {
-            result = String::from_utf8_lossy(&cemb_run.stderr).to_string();
+        if output.status.success() {
+            result = String::from_utf8_lossy(&output.stdout).to_string();
         } else {
-            result = String::from_utf8_lossy(&cemb_run.stdout).to_string();
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            eprintln!("Failed to execute command. error: {}", stderr);
         }
     }
+
     return result;
 }

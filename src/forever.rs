@@ -1,4 +1,4 @@
-use crate::{external, if_expr, printline};
+use crate::{external, if_expr, input, printline};
 
 use colored::*;
 
@@ -16,19 +16,29 @@ pub fn forever(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
                                     match var_type {
                                         "String" => {
                                             if let Some(&string_first_part) = tokens.get(5) {
-                                                if let Some(&string_last_part) = tokens.last() {
-                                                    if string_first_part.starts_with("'")
-                                                        && string_last_part.ends_with("'")
-                                                    {
-                                                        let value: String = tokens[5..].join(" ");
-                                                        let metadata: String = format!(
-                                                            "{} {} {}",
-                                                            var_name, var_type, value
-                                                        );
-                                                        stack.push(metadata);
-                                                    } else {
-                                                        println!("Usage: let str :: String = 'Hello world'");
-                                                        std::process::exit(0);
+                                                if string_first_part == "cemb.input" {
+                                                    let value = input::get_input();
+                                                    let metadata: String = format!(
+                                                        "{} {} {}",
+                                                        var_name, var_type, value
+                                                    );
+                                                    stack.push(metadata);
+                                                } else {
+                                                    if let Some(&string_last_part) = tokens.last() {
+                                                        if string_first_part.starts_with("'")
+                                                            && string_last_part.ends_with("'")
+                                                        {
+                                                            let value: String =
+                                                                tokens[5..].join(" ");
+                                                            let metadata: String = format!(
+                                                                "{} {} {}",
+                                                                var_name, var_type, value
+                                                            );
+                                                            stack.push(metadata);
+                                                        } else {
+                                                            println!("Usage: let str :: String = 'Hello world'");
+                                                            std::process::exit(0);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -36,36 +46,78 @@ pub fn forever(tokens: Vec<&str>, mut stack: Vec<String>) -> Vec<String> {
 
                                         "Int" => {
                                             if let Some(&value) = tokens.get(5) {
-                                                if let Ok(_number) = value.parse::<i64>() {
-                                                    let metadata: String = format!(
-                                                        "{} {} {}",
-                                                        var_name, var_type, value
-                                                    );
-                                                    stack.push(metadata);
+                                                if value == "cemb.input" {
+                                                    let inputed_value = input::get_input();
+                                                    if let Ok(_number) =
+                                                        inputed_value.parse::<i64>()
+                                                    {
+                                                        let metadata: String = format!(
+                                                            "{} {} {}",
+                                                            var_name, var_type, inputed_value
+                                                        );
+                                                        stack.push(metadata);
+                                                    } else {
+                                                        println!(
+                                                            "{} {}",
+                                                            "Not a piece of valid integer: ".red(),
+                                                            value
+                                                        );
+                                                        std::process::exit(1);
+                                                    }
                                                 } else {
-                                                    println!(
-                                                        "{} {}",
-                                                        "Not a piece of valid integer: ".red(),
-                                                        value
-                                                    );
+                                                    if let Ok(_number) = value.parse::<i64>() {
+                                                        let metadata: String = format!(
+                                                            "{} {} {}",
+                                                            var_name, var_type, value
+                                                        );
+                                                        stack.push(metadata);
+                                                    } else {
+                                                        println!(
+                                                            "{} {}",
+                                                            "Not a piece of valid integer: ".red(),
+                                                            value
+                                                        );
+                                                        std::process::exit(1);
+                                                    }
                                                 }
                                             }
                                         }
 
                                         "Float" => {
                                             if let Some(&value) = tokens.get(5) {
-                                                if let Ok(_number) = value.parse::<f64>() {
-                                                    let metadata: String = format!(
-                                                        "{} {} {}",
-                                                        var_name, var_type, value
-                                                    );
-                                                    stack.push(metadata);
+                                                if value == "cemb.input" {
+                                                    let inputed_value = input::get_input();
+                                                    if let Ok(_number) =
+                                                        inputed_value.parse::<f64>()
+                                                    {
+                                                        let metadata: String = format!(
+                                                            "{} {} {}",
+                                                            var_name, var_type, inputed_value
+                                                        );
+                                                        stack.push(metadata);
+                                                    } else {
+                                                        println!(
+                                                            "{} {}",
+                                                            "Not a piece of valid float: ".red(),
+                                                            value
+                                                        );
+                                                        std::process::exit(1);
+                                                    }
                                                 } else {
-                                                    println!(
-                                                        "{} {}",
-                                                        "Not a piece of float: ".red(),
-                                                        value
-                                                    );
+                                                    if let Ok(_number) = value.parse::<f64>() {
+                                                        let metadata: String = format!(
+                                                            "{} {} {}",
+                                                            var_name, var_type, value
+                                                        );
+                                                        stack.push(metadata);
+                                                    } else {
+                                                        println!(
+                                                            "{} {}",
+                                                            "Not a piece of valid float: ".red(),
+                                                            value
+                                                        );
+                                                        std::process::exit(1);
+                                                    }
                                                 }
                                             }
                                         }

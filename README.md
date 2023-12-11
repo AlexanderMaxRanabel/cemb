@@ -2,8 +2,8 @@
 ## cemb is a small virtual machine that runs cASM(cemb Assembly). WARNING cemb project is still under development.
 
 ### What is CASM?
-cASM Stands for cemb assembly. Its a small programming language that you work directly with stack for memory management
-due to design of cemb.
+cASM Stands for cemb assembly. Its a small programming/scripting language that you work directly with stack for memory management
+due to design of cemb. Each file is their own function.
 
 ## Examples:
 ### WARNING Documentation is still WIP.
