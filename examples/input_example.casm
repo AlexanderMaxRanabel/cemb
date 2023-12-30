@@ -1,0 +1,5 @@
+let x :: String = cemb.input
+printline cemb.stack
+let y :: Int = cemb.input
+let z :: Float = cemb.input
+printline cemb.stack
