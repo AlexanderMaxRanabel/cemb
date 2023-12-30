@@ -57,6 +57,14 @@ pub fn printline(tokens: Vec<&str>, stack: Vec<String>) {
                                                 println!("{}", result);
                                             }
 
+                                            "**" => {
+                                                let u32_number_integer: u32 =
+                                                    number_integer_2 as u32;
+                                                let result =
+                                                    number_integer_1.pow(u32_number_integer);
+                                                println!("{}", result);
+                                            }
+
                                             _ => {
                                                 println!(
                                                     "{}: {}",
@@ -99,6 +107,11 @@ pub fn printline(tokens: Vec<&str>, stack: Vec<String>) {
 
                                             "/" => {
                                                 let result = number_float_1 / number_float_2;
+                                                println!("{}", result);
+                                            }
+
+                                            "**" => {
+                                                let result = number_float_1.powf(number_float_2);
                                                 println!("{}", result);
                                             }
 
