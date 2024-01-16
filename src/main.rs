@@ -32,155 +32,224 @@ fn main() -> Result<(), std::io::Error> {
                 match first_token {
                     "let" => {
                         //let0 x1 ::2 int3 =4 45
-                        let (var_name, type_indicator, var_type, value_indicator) = (
-                            tokens[1],
-                            tokens[2],
-                            tokens[3],
-                            tokens[4],
-                        );
+                        let (var_name, var_type) = (tokens[1], tokens[3]);
 
-                        if type_indicator == "::" {
-                            if value_indicator == "=" {
-                                match var_type {
-                                    "String" => {
-                                        if let Some(&string_first_part) = tokens.get(5) {
-                                            if string_first_part == "cemb.input" {
-                                                let value = input::get_input();
+                        if var_name.starts_with("(") {
+                            //The Unexpected behaviour Sector
+                            if var_name.starts_with("(") {
+                                let raw_var_name_list: Vec<_> = tokens
+                                    .iter()
+                                    .skip_while(|&&c| c != "(")
+                                    .skip(1)
+                                    .take_while(|&&c| c != ")")
+                                    .collect();
+
+                                let raw_var_value_list: Vec<_> = tokens
+                                    .iter()
+                                    .skip_while(|&&c| c != "[")
+                                    .skip(1)
+                                    .take_while(|&&c| c != "]")
+                                    .collect();
+
+                                let var_name_list: Vec<&str> =
+                                    raw_var_name_list.iter().map(|&&s| s).collect();
+
+                                let var_value_list: Vec<&str> =
+                                    raw_var_value_list.iter().map(|&&s| s).collect();
+
+                                let bulk_type: &str;
+
+                                if let Some(index) = tokens.iter().position(|&token| token == "::")
+                                {
+                                    if let Some(next_element) = tokens.iter().nth(index + 1) {
+                                        bulk_type = next_element;
+                                    } else {
+                                        println!("{}: No Element After {}", "Error".red(), "::");
+                                        std::process::exit(1);
+                                    }
+                                } else {
+                                    println!("{}: {} Did not found", "Error".red(), "::");
+                                    std::process::exit(1);
+                                }
+
+                                match bulk_type {
+                                    "BulkStr" => {
+                                        println!(
+                                            "{}: Unfortunetly this type is not implemented yet",
+                                            "Misfortune".magenta()
+                                        );
+                                        std::process::exit(1);
+                                        //TODO Implement string value collection
+                                    }
+
+                                    "BulkInt" => {
+                                        for (name, value) in
+                                            var_name_list.iter().zip(var_value_list.iter())
+                                        {
+                                            if let Ok(_number) = value.parse::<i64>() {
                                                 let metadata: String =
-                                                    format!("{} {} {}", var_name, var_type, value);
-                                                stack.push(metadata);
-                                            } else {
-                                                if let Some(&string_last_part) = tokens.last() {
-                                                    if string_first_part.starts_with("'")
-                                                        && string_last_part.ends_with("'")
-                                                    {
-                                                        let value: String = tokens[5..].join(" ");
-                                                        let metadata: String = format!(
-                                                            "{} {} {}",
-                                                            var_name, var_type, value
-                                                        );
-                                                        stack.push(metadata);
-                                                    } else {
-                                                        println!("Usage: let str :: String = 'Hello world'");
-                                                        std::process::exit(0);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    "Int" => {
-                                        if let Some(&value) = tokens.get(5) {
-                                            if value == "cemb.input" {
-                                                let inputed_value = input::get_input();
-                                                if let Ok(_number) = inputed_value.parse::<i64>() {
-                                                    let metadata: String = format!(
-                                                        "{} {} {}",
-                                                        var_name, var_type, inputed_value
-                                                    );
-                                                    stack.push(metadata);
-                                                } else {
-                                                    println!(
-                                                        "{} {}",
-                                                        "Not a piece of valid integer: ".red(),
-                                                        value
-                                                    );
-                                                    std::process::exit(1);
-                                                }
-                                            } else {
-                                                if let Ok(_number) = value.parse::<i64>() {
-                                                    let metadata: String = format!(
-                                                        "{} {} {}",
-                                                        var_name, var_type, value
-                                                    );
-                                                    stack.push(metadata);
-                                                } else {
-                                                    println!(
-                                                        "{} {}",
-                                                        "Not a piece of valid integer: ".red(),
-                                                        value
-                                                    );
-                                                    std::process::exit(1);
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    "Float" => {
-                                        if let Some(&value) = tokens.get(5) {
-                                            if value == "cemb.input" {
-                                                let inputed_value = input::get_input();
-                                                if let Ok(_number) = inputed_value.parse::<f64>() {
-                                                    let metadata: String = format!(
-                                                        "{} {} {}",
-                                                        var_name, var_type, inputed_value
-                                                    );
-                                                    stack.push(metadata);
-                                                } else {
-                                                    println!(
-                                                        "{} {}",
-                                                        "Not a piece of valid float: ".red(),
-                                                        value
-                                                    );
-                                                    std::process::exit(1);
-                                                }
-                                            } else {
-                                                if let Ok(_number) = value.parse::<f64>() {
-                                                    let metadata: String = format!(
-                                                        "{} {} {}",
-                                                        var_name, var_type, value
-                                                    );
-                                                    stack.push(metadata);
-                                                } else {
-                                                    println!(
-                                                        "{} {}",
-                                                        "Not a piece of valid float: ".red(),
-                                                        value
-                                                    );
-                                                    std::process::exit(1);
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    "Char" => {
-                                        if let Some(&value) = tokens.get(5) {
-                                            if value.len() == 1 {
-                                                let metadata: String =
-                                                    format!("{} {} {}", var_name, var_type, value);
+                                                    format!("{} {} {}", name, "Int", value);
                                                 stack.push(metadata);
                                             } else {
                                                 println!(
-                                                    "{}: {}",
-                                                    "Not a valid piece of char due to length".red(),
+                                                    "{} {}",
+                                                    "Not a piece of valid integer: ".red(),
                                                     value
                                                 );
+                                                std::process::exit(1);
+                                            }
+                                        }
+                                    }
+
+                                    "BulkFloat" => {
+                                        for (name, value) in
+                                            var_name_list.iter().zip(var_value_list.iter())
+                                        {
+                                            if let Ok(_number) = value.parse::<f64>() {
+                                                let metadata: String =
+                                                    format!("{} {} {}", name, "Float", value);
+                                                stack.push(metadata);
+                                            } else {
+                                                println!(
+                                                    "{} {}",
+                                                    "Not a piece of valid float: ".red(),
+                                                    value
+                                                );
+                                                std::process::exit(1);
                                             }
                                         }
                                     }
 
                                     _ => {
-                                        println!("{} {}", "Error: Unknown Type: ".red(), var_type);
-                                        std::process::exit(0)
+                                        println!("{}: Unknown Type: {}", "Error".red(), bulk_type);
+                                        std::process::exit(1);
                                     }
                                 }
                             } else {
-                                println!(
-                                    "{}: value Indicator Syntax error: {}",
-                                    "Error".red(),
-                                    value_indicator
-                                );
-                                println!("{}: let x :: Int = 42", "Usage".yellow().bold());
+                                println!("{}: In Bulk Declaration variable name list must start and end with: {}. Yours is: {}", "Error".red(), "()", var_name);
                                 std::process::exit(1);
                             }
                         } else {
-                            println!(
-                                "{}: Type Indicator Syntax error: {}",
-                                "Error".red(),
-                                type_indicator
-                            );
-                            println!("{}: let x :: Int = 42", "Usage".yellow().bold());
-                            std::process::exit(1);
+                            match var_type {
+                                "String" => {
+                                    if let Some(&string_first_part) = tokens.get(5) {
+                                        if string_first_part == "cemb.input" {
+                                            let value = input::get_input();
+                                            let metadata: String =
+                                                format!("{} {} {}", var_name, var_type, value);
+                                            stack.push(metadata);
+                                        } else {
+                                            if let Some(&string_last_part) = tokens.last() {
+                                                if string_first_part.starts_with("'")
+                                                    && string_last_part.ends_with("'")
+                                                {
+                                                    let value: String = tokens[5..].join(" ");
+                                                    let metadata: String = format!(
+                                                        "{} {} {}",
+                                                        var_name, var_type, value
+                                                    );
+                                                    stack.push(metadata);
+                                                } else {
+                                                    println!(
+                                                        "Usage: let str :: String = 'Hello world'"
+                                                    );
+                                                    std::process::exit(0);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                "Int" => {
+                                    if let Some(&value) = tokens.get(5) {
+                                        if value == "cemb.input" {
+                                            let inputed_value = input::get_input();
+                                            if let Ok(_number) = inputed_value.parse::<i64>() {
+                                                let metadata: String = format!(
+                                                    "{} {} {}",
+                                                    var_name, var_type, inputed_value
+                                                );
+                                                stack.push(metadata);
+                                            } else {
+                                                println!(
+                                                    "{} {}",
+                                                    "Not a piece of valid integer: ".red(),
+                                                    value
+                                                );
+                                                std::process::exit(1);
+                                            }
+                                        } else {
+                                            if let Ok(_number) = value.parse::<i64>() {
+                                                let metadata: String =
+                                                    format!("{} {} {}", var_name, var_type, value);
+                                                stack.push(metadata);
+                                            } else {
+                                                println!(
+                                                    "{} {}",
+                                                    "Not a piece of valid integer: ".red(),
+                                                    value
+                                                );
+                                                std::process::exit(1);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                "Float" => {
+                                    if let Some(&value) = tokens.get(5) {
+                                        if value == "cemb.input" {
+                                            let inputed_value = input::get_input();
+                                            if let Ok(_number) = inputed_value.parse::<f64>() {
+                                                let metadata: String = format!(
+                                                    "{} {} {}",
+                                                    var_name, var_type, inputed_value
+                                                );
+                                                stack.push(metadata);
+                                            } else {
+                                                println!(
+                                                    "{} {}",
+                                                    "Not a piece of valid float: ".red(),
+                                                    value
+                                                );
+                                                std::process::exit(1);
+                                            }
+                                        } else {
+                                            if let Ok(_number) = value.parse::<f64>() {
+                                                let metadata: String =
+                                                    format!("{} {} {}", var_name, var_type, value);
+                                                stack.push(metadata);
+                                                println!(
+                                                    "{} {}",
+                                                    "Not a piece of valid float: ".red(),
+                                                    value
+                                                );
+                                                std::process::exit(1);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                "Char" => {
+                                    if let Some(&value) = tokens.get(5) {
+                                        if value.len() == 1 {
+                                            let metadata: String =
+                                                format!("{} {} {}", var_name, var_type, value);
+                                            stack.push(metadata);
+                                        } else {
+                                            println!(
+                                                "{}: {}",
+                                                "Not a valid piece of char due to length".red(),
+                                                value
+                                            );
+                                        }
+                                    }
+                                }
+
+                                _ => {
+                                    println!("{} {}", "Error: Unknown Type: ".red(), var_type);
+                                    std::process::exit(1);
+                                }
+                            }
                         }
                     }
 
