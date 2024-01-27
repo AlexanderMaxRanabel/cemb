@@ -74,12 +74,51 @@ fn main() -> Result<(), std::io::Error> {
 
                                 match bulk_type {
                                     "BulkStr" => {
-                                        println!(
-                                            "{}: Unfortunetly this type is not implemented yet",
-                                            "Misfortune".magenta()
-                                        );
-                                        std::process::exit(1);
-                                        //TODO Implement string value collection
+                                        let raw_var_value_list: Vec<_> = tokens
+                                            .iter()
+                                            .skip_while(|&&c| c != "[")
+                                            .skip(1)
+                                            .take_while(|&&c| c != "]")
+                                            .collect();
+
+                                        let var_name_list: Vec<&str> =
+                                            raw_var_name_list.iter().map(|&&s| s).collect();
+
+                                        let mut strings: Vec<String> = Vec::new();
+                                        let mut beg_strings: Vec<&str> = Vec::new();
+                                        let mut end_strings: Vec<&str> = Vec::new();
+
+                                        for raw_str_val in var_value_list {
+                                            if raw_str_val.starts_with("'") {
+                                                beg_strings.push(raw_str_val);
+                                            } else if raw_str_val.ends_with("'") {
+                                                end_strings.push(raw_str_val);
+                                            } else {
+                                                println!(
+                                                    "{}: Unknown Ending of Variable: {}",
+                                                    "Error".red(),
+                                                    raw_str_val
+                                                );
+                                                std::process::exit(1);
+                                            }
+                                        }
+
+                                        for (beg_val, end_val) in
+                                            beg_strings.iter().zip(end_strings.iter())
+                                        {
+                                            let str_val: String =
+                                                format!("{} {}", beg_val, end_val);
+
+                                            strings.push(str_val);
+                                        }
+
+                                        for (name, value) in
+                                            var_name_list.iter().zip(strings.iter())
+                                        {
+                                            let metadata: String =
+                                                format!("{} {} {}", name, "String", value);
+                                            stack.push(metadata);
+                                        }
                                     }
 
                                     "BulkInt" => {
