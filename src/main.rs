@@ -54,8 +54,10 @@ fn main() -> Result<(), std::io::Error> {
                                 let var_name_list: Vec<&str> =
                                     raw_var_name_list.iter().map(|&&s| s).collect();
 
-                                let var_value_list: Vec<&str> =
+                                let mut var_value_list: Vec<&str> =
                                     raw_var_value_list.iter().map(|&&s| s).collect();
+
+                                println!("{:?}", var_value_list);
 
                                 let bulk_type: &str;
 
@@ -73,52 +75,38 @@ fn main() -> Result<(), std::io::Error> {
                                 }
 
                                 match bulk_type {
-                                    "BulkStr" => {
-                                        let raw_var_value_list: Vec<_> = tokens
-                                            .iter()
-                                            .skip_while(|&&c| c != "[")
-                                            .skip(1)
-                                            .take_while(|&&c| c != "]")
-                                            .collect();
+                                    "BulkStr" => { 
+                                        let mut full_values: Vec<String> = Vec::new();
+                                        let mut full_string = String::new();
 
-                                        let var_name_list: Vec<&str> =
-                                            raw_var_name_list.iter().map(|&&s| s).collect();
-
-                                        let mut strings: Vec<String> = Vec::new();
-                                        let mut beg_strings: Vec<&str> = Vec::new();
-                                        let mut end_strings: Vec<&str> = Vec::new();
-
-                                        for raw_str_val in var_value_list {
-                                            if raw_str_val.starts_with("'") {
-                                                beg_strings.push(raw_str_val);
-                                            } else if raw_str_val.ends_with("'") {
-                                                end_strings.push(raw_str_val);
+                                        for val in var_value_list.iter() {
+                                            if *val == "," {
+                                                if !full_string.is_empty() {
+                                                    full_values.push(full_string.clone());
+                                                    full_string.clear();
+                                                }
                                             } else {
-                                                println!(
-                                                    "{}: Unknown Ending of Variable: {}",
-                                                    "Error".red(),
-                                                    raw_str_val
-                                                );
-                                                std::process::exit(1);
+                                                if !full_string.is_empty() {
+                                                    full_string.push(' ');
+                                                }
+                                                full_string.push_str(val);
                                             }
                                         }
 
-                                        for (beg_val, end_val) in
-                                            beg_strings.iter().zip(end_strings.iter())
-                                        {
-                                            let str_val: String =
-                                                format!("{} {}", beg_val, end_val);
-
-                                            strings.push(str_val);
+                                        if !full_string.is_empty() {
+                                            full_values.push(full_string);
                                         }
 
-                                        for (name, value) in
-                                            var_name_list.iter().zip(strings.iter())
-                                        {
-                                            let metadata: String =
-                                                format!("{} {} {}", name, "String", value);
+                                        println!("{:?}", full_values);
+
+                                        for (name, value) in var_name_list.iter().zip(full_values.iter()) {
+                                            println!("{}", value);
+                                            let metadata: String = format!("{} {} {}", name, "String", value);
+                                            println!("{}", metadata);
                                             stack.push(metadata);
                                         }
+
+                                        var_value_list.clear();
                                     }
 
                                     "BulkInt" => {
@@ -138,6 +126,7 @@ fn main() -> Result<(), std::io::Error> {
                                                 std::process::exit(1);
                                             }
                                         }
+                                        var_value_list.clear();
                                     }
 
                                     "BulkFloat" => {
@@ -157,6 +146,7 @@ fn main() -> Result<(), std::io::Error> {
                                                 std::process::exit(1);
                                             }
                                         }
+                                        var_value_list.clear();
                                     }
 
                                     _ => {
